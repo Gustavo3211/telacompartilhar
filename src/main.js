@@ -35,6 +35,8 @@ const translations = {
     screenOf: 'Tela de {username}',
     camOf: 'Câmera de {username}',
     size: 'Tam:',
+    broadcastRes: 'Res. Envio:',
+    displayRes: 'Res. Exibição:',
     res: 'Res:',
     fps: 'FPS:',
     delay: 'Delay:',
@@ -42,6 +44,7 @@ const translations = {
     small: 'Pequeno',
     medium: 'Médio',
     large: 'Grande',
+    nativeRes: 'Nativa (Original)',
     delay5s: '5.0s (Padrão)',
     delay3s: '3.0s (Médio)',
     delay1s: '1.0s (Baixo)',
@@ -91,6 +94,8 @@ const translations = {
     screenOf: '{username}\'s Screen',
     camOf: '{username}\'s Camera',
     size: 'Size:',
+    broadcastRes: 'Broadcast Res:',
+    displayRes: 'Display Res:',
     res: 'Res:',
     fps: 'FPS:',
     delay: 'Delay:',
@@ -98,6 +103,7 @@ const translations = {
     small: 'Small',
     medium: 'Medium',
     large: 'Large',
+    nativeRes: 'Native (Original)',
     delay5s: '5.0s (Default)',
     delay3s: '3.0s (Medium)',
     delay1s: '1.0s (Low)',
@@ -162,13 +168,13 @@ const state = {
   roomPassword: '',
   isHost: false,
   isAuthenticated: false,
-  roomMembers: new Map(), // peerId -> username
-  dataConnections: new Map(), // peerId -> connection
-  mediaCalls: new Map(), // peerId -> call
-  cameraCalls: new Map(), // peerId -> call
+  roomMembers: new Map(),
+  dataConnections: new Map(),
+  mediaCalls: new Map(),
+  cameraCalls: new Map(),
   myScreenStream: null,
   myCameraStream: null,
-  activeRemoteStreams: new Map(), // streamKey -> { stream, call, peerId, username }
+  activeRemoteStreams: new Map(),
   screenSettings: {
     resolution: '480',
     fps: '30'
@@ -176,7 +182,7 @@ const state = {
   autoSyncInterval: null,
   autoQualityInterval: null,
   heartbeatInterval: null,
-  lastHeartbeat: new Map(), // peerId -> timestamp
+  lastHeartbeat: new Map(),
   isToolbarHidden: false
 };
 
@@ -209,12 +215,10 @@ document.getElementById('lang-select').addEventListener('change', (e) => {
   setLanguage(e.target.value);
 });
 
-// Toast Notification - Silenced per user request
 function showToast(msg, duration = 4000) {
   // Notifications silenced
 }
 
-// Floating Bar Toggle
 const floatBtn = document.getElementById('floating-toggle-btn');
 floatBtn.addEventListener('click', () => {
   toggleToolbar(false);
@@ -236,7 +240,6 @@ function toggleToolbar(hide) {
   }
 }
 
-// Cryptographically Secure High-Entropy Room Code Generator
 function generateSecureCode() {
   const array = new Uint8Array(24);
   window.crypto.getRandomValues(array);
@@ -248,7 +251,6 @@ function generateSecureCode() {
   return code;
 }
 
-// Get URL Parameters
 function getUrlParams() {
   const p = new URLSearchParams(window.location.search);
   return {
@@ -257,7 +259,6 @@ function getUrlParams() {
   };
 }
 
-// Render Lobby
 function renderLobby() {
   stopAutoSync();
   stopAutoQualityMonitor();
@@ -311,7 +312,6 @@ function renderLobby() {
   });
 }
 
-// Render Active Room View
 function renderRoomView() {
   document.getElementById('header-status').innerText = t('statusInRoom', { username: state.myUsername });
 
@@ -392,7 +392,6 @@ function renderRoomView() {
   updateVideoGrid();
 }
 
-// Reset Board Layout
 function resetBoardLayout() {
   const cards = document.querySelectorAll('.video-card');
   if (!cards.length) return;
@@ -424,7 +423,6 @@ function resetBoardLayout() {
   });
 }
 
-// Auto Sync Background Loop
 function startAutoSync() {
   stopAutoSync();
   state.autoSyncInterval = setInterval(() => {
@@ -441,7 +439,6 @@ function stopAutoSync() {
   }
 }
 
-// Host Quality Monitor Algorithm
 let consecutivePristineCount = 0;
 let currentAutoRes = '480';
 
@@ -502,7 +499,6 @@ function stopAutoQualityMonitor() {
   }
 }
 
-// Connection Heartbeat & Anti-Ghost Cleanup
 function startHeartbeat() {
   stopHeartbeat();
   state.heartbeatInterval = setInterval(() => {
@@ -562,7 +558,6 @@ function removePeer(peerId) {
   updateVideoGrid();
 }
 
-// WebAudio & LocalStorage Persistence System
 let globalAudioCtx = null;
 
 function getAudioContext() {
@@ -926,6 +921,7 @@ function updateVideoGrid() {
   }
 }
 
+// Presenter/Host Local Tile - Controls Broadcast Quality sent to everyone
 function createLocalVideoTile(id, labelText, stream) {
   const card = document.createElement('div');
   card.className = 'video-card size-small';
@@ -942,7 +938,7 @@ function createLocalVideoTile(id, labelText, stream) {
           <option value="size-large">${t('large')}</option>
         </select>
 
-        <label style="font-size: 0.75rem;">${t('res')}</label>
+        <label style="font-size: 0.75rem;">${t('broadcastRes')}</label>
         <select id="res-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
           <option value="480" ${state.screenSettings.resolution === '480' ? 'selected' : ''}>480p (SD)</option>
           <option value="720" ${state.screenSettings.resolution === '720' ? 'selected' : ''}>720p (HD)</option>
@@ -950,6 +946,7 @@ function createLocalVideoTile(id, labelText, stream) {
           <option value="1440" ${state.screenSettings.resolution === '1440' ? 'selected' : ''}>1440p (2K)</option>
           <option value="4k" ${state.screenSettings.resolution === '4k' ? 'selected' : ''}>4K (UHD)</option>
         </select>
+
         <label style="font-size: 0.75rem;">${t('fps')}</label>
         <select id="fps-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
           <option value="30" ${state.screenSettings.fps === '30' ? 'selected' : ''}>30 FPS</option>
@@ -1016,6 +1013,7 @@ function createLocalVideoTile(id, labelText, stream) {
   return card;
 }
 
+// Viewer Remote Tile - Controls Local Display Scale 100% Individually per viewer without touching host stream
 function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
   const card = document.createElement('div');
   card.className = 'video-card size-small';
@@ -1041,28 +1039,20 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
           <option value="size-large">${t('large')}</option>
         </select>
 
+        <label style="font-size: 0.75rem;">${t('displayRes')}</label>
+        <select id="display-res-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
+          <option value="native" selected>${t('nativeRes')}</option>
+          <option value="1080">1080p</option>
+          <option value="720">720p</option>
+          <option value="480">480p</option>
+        </select>
+
         <label style="font-size: 0.75rem;">${t('delay')}</label>
         <select id="buf-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
           <option value="5" selected>${t('delay5s')}</option>
           <option value="3">${t('delay3s')}</option>
           <option value="1">${t('delay1s')}</option>
           <option value="0.25">${t('delay025s')}</option>
-        </select>
-
-        <label style="font-size: 0.75rem;">${t('res')}</label>
-        <select id="res-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="480" selected>480p</option>
-          <option value="720">720p</option>
-          <option value="1080">1080p</option>
-          <option value="1440">1440p</option>
-          <option value="4k">4K</option>
-        </select>
-
-        <label style="font-size: 0.75rem;">${t('fps')}</label>
-        <select id="fps-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="30" selected>30 FPS</option>
-          <option value="60">60 FPS</option>
-          <option value="15">15 FPS</option>
         </select>
 
         <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-mute-${id}">
@@ -1098,8 +1088,7 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
     const muteBtn = card.querySelector(`#btn-mute-${id}`);
     const sizeSel = card.querySelector(`#size-sel-${id}`);
     const bufSel = card.querySelector(`#buf-sel-${id}`);
-    const resSel = card.querySelector(`#res-sel-${id}`);
-    const fpsSel = card.querySelector(`#fps-sel-${id}`);
+    const displayResSel = card.querySelector(`#display-res-sel-${id}`);
     const header = card.querySelector(`#header-${id}`);
 
     cleanupRemoteAudioNodes(streamKey);
@@ -1250,19 +1239,24 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
       });
     }
 
-    if (resSel && fpsSel) {
-      const sendQualityRequest = () => {
-        const conn = state.dataConnections.get(peerId);
-        if (conn && conn.open) {
-          conn.send({
-            type: 'REQUEST_QUALITY',
-            res: resSel.value,
-            fps: fpsSel.value
-          });
+    // Individual Local Display Resolution Scaling (does NOT alter host stream for other viewers!)
+    if (displayResSel && video) {
+      displayResSel.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === '480') {
+          video.style.maxWidth = '854px';
+          video.style.maxHeight = '480px';
+        } else if (val === '720') {
+          video.style.maxWidth = '1280px';
+          video.style.maxHeight = '720px';
+        } else if (val === '1080') {
+          video.style.maxWidth = '1920px';
+          video.style.maxHeight = '1080px';
+        } else {
+          video.style.maxWidth = '100%';
+          video.style.maxHeight = '100%';
         }
-      };
-      resSel.addEventListener('change', sendQualityRequest);
-      fpsSel.addEventListener('change', sendQualityRequest);
+      });
     }
 
     if (fsBtn) {
@@ -1517,10 +1511,6 @@ function handleDataMessage(fromPeer, data) {
     if (state.myCameraStream) {
       const call = state.peer.call(fromPeer, state.myCameraStream, { metadata: { type: 'camera', username: state.myUsername } });
       state.cameraCalls.set(fromPeer, call);
-    }
-  } else if (data.type === 'REQUEST_QUALITY') {
-    if (state.myScreenStream) {
-      applyRealtimeQuality(state.myScreenStream, data.res, data.fps);
     }
   } else if (data.type === 'STOPPED_SHARE') {
     removeRemoteStream(`${fromPeer}-screen`);
