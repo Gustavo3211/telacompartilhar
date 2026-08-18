@@ -1,11 +1,163 @@
 import './style.css';
 import Peer from 'peerjs';
 
+// i18n Translation System
+const translations = {
+  pt: {
+    appTitle: 'compartilhamento compartilhado',
+    statusDisconnected: 'Status: Desconectado',
+    statusInRoom: 'Status: Na Sala ({username})',
+    showInterface: 'Mostrar Interface',
+    hideInterface: 'Esconder Interface',
+    joinOrCreateRoom: 'Entrar ou Criar Sala',
+    yourName: 'Seu Nome / Apelido',
+    placeholderName: 'Digite seu nome',
+    roomPasswordOptional: 'Senha da Sala (Opcional)',
+    placeholderPassword: 'Digite uma senha personalizada se desejar',
+    createRoomBtn: 'Criar Sala e Compartilhar Link',
+    defaultUserPrefix: 'Usuário_',
+    roomLink: 'Link da Sala:',
+    protectedByPassword: 'Protegida por Senha',
+    peopleInRoom: '({count} {label} na sala)',
+    person: 'pessoa',
+    people: 'pessoas',
+    shareScreen: 'Compartilhar Minha Tela',
+    stopShareScreen: 'Parar de Compartilhar',
+    turnOnCam: 'Ligar Câmera',
+    turnOffCam: 'Desligar Câmera',
+    resetLayout: 'Resetar Layout',
+    syncStreams: 'Sincronizar Transmissões',
+    copyLink: 'Copiar Link',
+    leave: 'Sair',
+    emptyState: 'Nenhuma tela ou câmera está sendo compartilhada no momento.<br>Qualquer pessoa conectada pode clicar em <strong>"Compartilhar Minha Tela"</strong> ou <strong>"Ligar Câmera"</strong> para transmitir.',
+    yourScreen: 'Sua Tela (Você)',
+    yourCam: 'Sua Câmera (Você)',
+    screenOf: 'Tela de {username}',
+    camOf: 'Câmera de {username}',
+    size: 'Tam:',
+    res: 'Res:',
+    fps: 'FPS:',
+    delay: 'Delay:',
+    vol: 'Vol:',
+    small: 'Pequeno',
+    medium: 'Médio',
+    large: 'Grande',
+    delay5s: '5.0s (Padrão)',
+    delay3s: '3.0s (Médio)',
+    delay1s: '1.0s (Baixo)',
+    delay025s: '0.25s (Mínimo)',
+    mute: 'Mutar',
+    unmute: 'Desmutar',
+    fullscreen: 'Tela Cheia',
+    closeStream: 'Fechar Tela',
+    watchStream: 'Assistir Transmissão',
+    protectedRoomModalTitle: 'Sala Protegida por Senha',
+    protectedRoomModalDesc: 'Digite a senha correta para acessar a sala:',
+    placeholderRoomPasswordModal: 'Senha da sala',
+    cancel: 'Cancelar',
+    enter: 'Entrar',
+    incorrectPassword: 'Senha incorreta!',
+    defaultUsername: 'Usuário',
+  },
+  en: {
+    appTitle: 'Shared Screen Share',
+    statusDisconnected: 'Status: Disconnected',
+    statusInRoom: 'Status: In Room ({username})',
+    showInterface: 'Show Interface',
+    hideInterface: 'Hide Interface',
+    joinOrCreateRoom: 'Join or Create Room',
+    yourName: 'Your Name / Nickname',
+    placeholderName: 'Enter your name',
+    roomPasswordOptional: 'Room Password (Optional)',
+    placeholderPassword: 'Enter a custom password if desired',
+    createRoomBtn: 'Create Room & Share Link',
+    defaultUserPrefix: 'User_',
+    roomLink: 'Room Link:',
+    protectedByPassword: 'Password Protected',
+    peopleInRoom: '({count} {label} in room)',
+    person: 'person',
+    people: 'people',
+    shareScreen: 'Share My Screen',
+    stopShareScreen: 'Stop Sharing',
+    turnOnCam: 'Turn On Camera',
+    turnOffCam: 'Turn Off Camera',
+    resetLayout: 'Reset Layout',
+    syncStreams: 'Sync Streams',
+    copyLink: 'Copy Link',
+    leave: 'Leave',
+    emptyState: 'No screen or camera is currently being shared.<br>Anyone connected can click <strong>"Share My Screen"</strong> or <strong>"Turn On Camera"</strong> to stream.',
+    yourScreen: 'Your Screen (You)',
+    yourCam: 'Your Camera (You)',
+    screenOf: '{username}\'s Screen',
+    camOf: '{username}\'s Camera',
+    size: 'Size:',
+    res: 'Res:',
+    fps: 'FPS:',
+    delay: 'Delay:',
+    vol: 'Vol:',
+    small: 'Small',
+    medium: 'Medium',
+    large: 'Large',
+    delay5s: '5.0s (Default)',
+    delay3s: '3.0s (Medium)',
+    delay1s: '1.0s (Low)',
+    delay025s: '0.25s (Min)',
+    mute: 'Mute',
+    unmute: 'Unmute',
+    fullscreen: 'Fullscreen',
+    closeStream: 'Close Stream',
+    watchStream: 'Watch Stream',
+    protectedRoomModalTitle: 'Password Protected Room',
+    protectedRoomModalDesc: 'Enter the correct password to join the room:',
+    placeholderRoomPasswordModal: 'Room password',
+    cancel: 'Cancel',
+    enter: 'Enter',
+    incorrectPassword: 'Incorrect password!',
+    defaultUsername: 'User',
+  }
+};
+
+function detectLanguage() {
+  const saved = localStorage.getItem('app_lang');
+  if (saved && (saved === 'pt' || saved === 'en')) return saved;
+  const browserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+  if (browserLang.startsWith('pt')) {
+    return 'pt';
+  }
+  return 'en';
+}
+
+let currentLang = detectLanguage();
+
+function t(key, params = {}) {
+  const text = translations[currentLang]?.[key] || translations['en']?.[key] || key;
+  return text.replace(/\{(\w+)\}/g, (_, k) => params[k] !== undefined ? params[k] : `{${k}}`);
+}
+
+function setLanguage(lang) {
+  if (lang !== 'pt' && lang !== 'en') return;
+  currentLang = lang;
+  localStorage.setItem('app_lang', lang);
+  document.title = t('appTitle');
+
+  const titleEl = document.querySelector('#main-header h1');
+  if (titleEl) titleEl.innerText = t('appTitle');
+
+  const floatBtn = document.getElementById('floating-toggle-btn');
+  if (floatBtn) floatBtn.innerText = t('showInterface');
+
+  if (state.isAuthenticated && state.roomCode) {
+    renderRoomView();
+  } else {
+    renderLobby();
+  }
+}
+
 // Global State
 const state = {
   peer: null,
   myPeerId: '',
-  myUsername: localStorage.getItem('cc_username') || ('Usuário_' + Math.floor(Math.random() * 8999 + 1000)),
+  myUsername: localStorage.getItem('cc_username') || (t('defaultUserPrefix') + Math.floor(Math.random() * 8999 + 1000)),
   roomCode: '',
   roomPassword: '',
   isHost: false,
@@ -31,19 +183,33 @@ const state = {
 // Render Shell
 document.getElementById('app').innerHTML = `
   <header id="main-header">
-    <h1>compartilhamento compartilhado</h1>
-    <div id="header-status" style="font-size: 0.9rem; color: var(--text-muted);">Status: Desconectado</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.5rem;">
+      <h1>${t('appTitle')}</h1>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div id="header-status" style="font-size: 0.9rem; color: var(--text-muted);">${t('statusDisconnected')}</div>
+        <select id="lang-select" class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.85rem; cursor: pointer; background: var(--bg-card); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px;">
+          <option value="pt" ${currentLang === 'pt' ? 'selected' : ''}>🇧🇷 PT</option>
+          <option value="en" ${currentLang === 'en' ? 'selected' : ''}>🇺🇸 EN</option>
+        </select>
+      </div>
+    </div>
   </header>
 
   <main class="main-content" id="main-content">
   </main>
 
-  <button id="floating-toggle-btn" class="btn btn-secondary floating-toggle-btn" style="display: none;">Mostrar Interface</button>
+  <button id="floating-toggle-btn" class="btn btn-secondary floating-toggle-btn" style="display: none;">${t('showInterface')}</button>
   <div id="modal-container"></div>
   <div class="toast-container" id="toast-container" style="display: none;"></div>
 `;
 
-// Toast Notification - Silenced per user request ("evite as notificação pra num ficar alertando tudo toda hr")
+document.title = t('appTitle');
+
+document.getElementById('lang-select').addEventListener('change', (e) => {
+  setLanguage(e.target.value);
+});
+
+// Toast Notification - Silenced per user request
 function showToast(msg, duration = 4000) {
   // Notifications silenced
 }
@@ -101,7 +267,7 @@ function renderLobby() {
   state.roomPassword = '';
   state.isHost = false;
   state.isAuthenticated = false;
-  document.getElementById('header-status').innerText = 'Status: Desconectado';
+  document.getElementById('header-status').innerText = t('statusDisconnected');
 
   const urlParams = getUrlParams();
 
@@ -114,20 +280,20 @@ function renderLobby() {
   main.innerHTML = `
     <div class="lobby-container">
       <div class="card">
-        <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Entrar ou Criar Sala</h2>
+        <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">${t('joinOrCreateRoom')}</h2>
 
         <div class="field-group">
-          <label>Seu Nome / Apelido</label>
-          <input type="text" id="input-username" placeholder="Digite seu nome" value="${state.myUsername}">
+          <label>${t('yourName')}</label>
+          <input type="text" id="input-username" placeholder="${t('placeholderName')}" value="${state.myUsername}">
         </div>
 
         <div class="field-group">
-          <label>Senha da Sala (Opcional)</label>
-          <input type="password" id="input-password" placeholder="Digite uma senha personalizada se desejar">
+          <label>${t('roomPasswordOptional')}</label>
+          <input type="password" id="input-password" placeholder="${t('placeholderPassword')}">
         </div>
 
         <div style="margin-top: 1.25rem;">
-          <button class="btn" id="btn-create" style="width: 100%;">Criar Sala e Compartilhar Link</button>
+          <button class="btn" id="btn-create" style="width: 100%;">${t('createRoomBtn')}</button>
         </div>
       </div>
     </div>
@@ -147,25 +313,28 @@ function renderLobby() {
 
 // Render Active Room View
 function renderRoomView() {
-  document.getElementById('header-status').innerText = `Status: Na Sala (${state.myUsername})`;
+  document.getElementById('header-status').innerText = t('statusInRoom', { username: state.myUsername });
 
   const main = document.getElementById('main-content');
+  const count = state.roomMembers.size;
+  const label = count === 1 ? t('person') : t('people');
+
   main.innerHTML = `
     <div class="room-bar" id="main-room-bar">
       <div class="room-info">
-        <span>Link da Sala:</span>
-        ${state.roomPassword ? '<span style="font-size: 0.8rem; color: #f59e0b; background: rgba(245,158,11,0.1); padding: 0.2rem 0.5rem; border-radius: 4px;">Protegida por Senha</span>' : ''}
-        <span id="member-count-label" style="font-size: 0.9rem; color: var(--text-muted);">(1 pessoa na sala)</span>
+        <span>${t('roomLink')}</span>
+        ${state.roomPassword ? `<span style="font-size: 0.8rem; color: #f59e0b; background: rgba(245,158,11,0.1); padding: 0.2rem 0.5rem; border-radius: 4px;">${t('protectedByPassword')}</span>` : ''}
+        <span id="member-count-label" style="font-size: 0.9rem; color: var(--text-muted);">${t('peopleInRoom', { count, label })}</span>
       </div>
 
       <div class="room-actions">
-        <button class="btn" id="btn-toggle-share">Compartilhar Minha Tela</button>
-        <button class="btn btn-secondary" id="btn-toggle-cam">Ligar Câmera</button>
-        <button class="btn btn-secondary" id="btn-reset-layout">Resetar Layout</button>
-        <button class="btn btn-secondary" id="btn-sync-streams">Sincronizar Transmissões</button>
-        <button class="btn btn-secondary" id="btn-toggle-toolbar">Esconder Interface</button>
-        <button class="btn btn-secondary" id="btn-copy">Copiar Link</button>
-        <button class="btn btn-danger" id="btn-leave">Sair</button>
+        <button class="btn" id="btn-toggle-share">${state.myScreenStream ? t('stopShareScreen') : t('shareScreen')}</button>
+        <button class="btn ${state.myCameraStream ? 'btn-danger' : 'btn-secondary'}" id="btn-toggle-cam">${state.myCameraStream ? t('turnOffCam') : t('turnOnCam')}</button>
+        <button class="btn btn-secondary" id="btn-reset-layout">${t('resetLayout')}</button>
+        <button class="btn btn-secondary" id="btn-sync-streams">${t('syncStreams')}</button>
+        <button class="btn btn-secondary" id="btn-toggle-toolbar">${t('hideInterface')}</button>
+        <button class="btn btn-secondary" id="btn-copy">${t('copyLink')}</button>
+        <button class="btn btn-danger" id="btn-leave">${t('leave')}</button>
       </div>
     </div>
 
@@ -173,8 +342,7 @@ function renderRoomView() {
     </div>
 
     <div id="empty-state" class="empty-state">
-      Nenhuma tela ou câmera está sendo compartilhada no momento.<br>
-      Qualquer pessoa conectada pode clicar em <strong>"Compartilhar Minha Tela"</strong> ou <strong>"Ligar Câmera"</strong> para transmitir.
+      ${t('emptyState')}
     </div>
   `;
 
@@ -224,7 +392,7 @@ function renderRoomView() {
   updateVideoGrid();
 }
 
-// Reset Board Layout to mathematically optimal arrangement based on screen size & stream count
+// Reset Board Layout
 function resetBoardLayout() {
   const cards = document.querySelectorAll('.video-card');
   if (!cards.length) return;
@@ -354,7 +522,6 @@ function startHeartbeat() {
       }
     });
 
-    // Check remote stream track health
     state.activeRemoteStreams.forEach((data, streamKey) => {
       if (!data.stream) {
         removeRemoteStream(streamKey);
@@ -395,7 +562,7 @@ function removePeer(peerId) {
   updateVideoGrid();
 }
 
-// WebAudio & LocalStorage Persistence System for Chrome compatibility
+// WebAudio & LocalStorage Persistence System
 let globalAudioCtx = null;
 
 function getAudioContext() {
@@ -464,7 +631,7 @@ function saveVolumeState(streamKey, username, isCam, volume, muted) {
   } catch (e) {}
 }
 
-const remoteAudioNodes = new Map(); // streamKey -> { sourceNode, gainNode, stream }
+const remoteAudioNodes = new Map();
 
 function cleanupRemoteAudioNodes(streamKey) {
   const nodes = remoteAudioNodes.get(streamKey);
@@ -492,7 +659,6 @@ function removeRemoteStream(streamKey) {
     state.activeRemoteStreams.delete(streamKey);
   }
   
-  // Directly remove DOM node if present
   const tile = document.getElementById(`tile-stream-${streamKey}`);
   if (tile) {
     tile.remove();
@@ -500,7 +666,6 @@ function removeRemoteStream(streamKey) {
   updateVideoGrid();
 }
 
-// Broadcast Stream Sync Request
 function syncStreams() {
   state.dataConnections.forEach((conn) => {
     if (conn.open) {
@@ -509,7 +674,6 @@ function syncStreams() {
   });
 }
 
-// Apply Constraints in Real-Time to active stream track
 async function applyRealtimeQuality(stream, resVal, fpsVal) {
   if (!stream) return;
   const track = stream.getVideoTracks()[0];
@@ -542,7 +706,6 @@ async function applyRealtimeQuality(stream, resVal, fpsVal) {
   } catch (err) {}
 }
 
-// Drag-to-Reorder Tiles (Strict Zero-Overlap Flex Flow Layout)
 function makeCardDraggable(card, header) {
   let isDragging = false;
 
@@ -597,7 +760,6 @@ function makeCardDraggable(card, header) {
   header.addEventListener('pointercancel', stopDrag);
 }
 
-// In-Flow Interactive Card Resizer (Strict Zero-Overlap)
 function makeCardResizable(card) {
   const directions = ['tl', 'tr', 'bl', 'br'];
 
@@ -671,11 +833,8 @@ function makeCardResizable(card) {
   });
 }
 
-
-// Track current physical delay targets for each video element
 const currentStreamDelays = new Map();
 
-// Apply Delay Playout Buffer to WebRTC stream (default set to 5.0 seconds)
 function applyStreamPlayoutBuffer(videoElement, peerCall, bufferSeconds = 5.0) {
   if (!videoElement) return;
 
@@ -686,7 +845,6 @@ function applyStreamPlayoutBuffer(videoElement, peerCall, bufferSeconds = 5.0) {
 
   currentStreamDelays.set(elementId, seconds);
 
-  // Configure WebRTC RTP Receiver targets
   if (peerCall && peerCall.peerConnection) {
     try {
       const receivers = peerCall.peerConnection.getReceivers();
@@ -716,7 +874,6 @@ function applyStreamPlayoutBuffer(videoElement, peerCall, bufferSeconds = 5.0) {
   }
 }
 
-// Incremental / Preservative DOM Video Grid Update
 function updateVideoGrid() {
   const grid = document.getElementById('video-grid');
   const empty = document.getElementById('empty-state');
@@ -724,27 +881,24 @@ function updateVideoGrid() {
 
   const activeTileIds = new Set();
 
-  // Local Screen Stream
   if (state.myScreenStream) {
     const id = 'tile-my-local-screen';
     activeTileIds.add(id);
     if (!document.getElementById(id)) {
-      const tile = createLocalVideoTile(id, 'Sua Tela (Você)', state.myScreenStream);
+      const tile = createLocalVideoTile(id, t('yourScreen'), state.myScreenStream);
       grid.appendChild(tile);
     }
   }
 
-  // Local Camera Stream
   if (state.myCameraStream) {
     const id = 'tile-my-local-cam';
     activeTileIds.add(id);
     if (!document.getElementById(id)) {
-      const tile = createLocalVideoTile(id, 'Sua Câmera (Você)', state.myCameraStream);
+      const tile = createLocalVideoTile(id, t('yourCam'), state.myCameraStream);
       grid.appendChild(tile);
     }
   }
 
-  // Remote Streams
   state.activeRemoteStreams.forEach((data, streamKey) => {
     const id = `tile-stream-${streamKey}`;
     activeTileIds.add(id);
@@ -753,14 +907,13 @@ function updateVideoGrid() {
       const peerId = data.peerId || streamKey.split('-')[0];
       const isCam = streamKey.includes('-cam');
       const uname = data.username || state.roomMembers.get(peerId) || peerId.substring(0, 8);
-      const label = isCam ? `Câmera de ${uname}` : `Tela de ${uname}`;
+      const label = isCam ? t('camOf', { username: uname }) : t('screenOf', { username: uname });
 
       const tile = createRemoteVideoTile(id, label, data.stream, data.call, streamKey);
       grid.appendChild(tile);
     }
   });
 
-  // Remove departed stream tiles without touching existing ones
   const existingTiles = Array.from(grid.querySelectorAll('.video-card'));
   existingTiles.forEach(tile => {
     if (!activeTileIds.has(tile.id)) {
@@ -773,7 +926,6 @@ function updateVideoGrid() {
   }
 }
 
-// Create Local Presenter Video Tile
 function createLocalVideoTile(id, labelText, stream) {
   const card = document.createElement('div');
   card.className = 'video-card size-small';
@@ -783,14 +935,14 @@ function createLocalVideoTile(id, labelText, stream) {
     <div class="video-header" id="header-${id}">
       <span>${labelText}</span>
       <div class="video-controls-inline">
-        <label style="font-size: 0.75rem;">Tam:</label>
+        <label style="font-size: 0.75rem;">${t('size')}</label>
         <select id="size-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="size-small" selected>Pequeno</option>
-          <option value="size-medium">Médio</option>
-          <option value="size-large">Grande</option>
+          <option value="size-small" selected>${t('small')}</option>
+          <option value="size-medium">${t('medium')}</option>
+          <option value="size-large">${t('large')}</option>
         </select>
 
-        <label style="font-size: 0.75rem;">Res:</label>
+        <label style="font-size: 0.75rem;">${t('res')}</label>
         <select id="res-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
           <option value="480" ${state.screenSettings.resolution === '480' ? 'selected' : ''}>480p (SD)</option>
           <option value="720" ${state.screenSettings.resolution === '720' ? 'selected' : ''}>720p (HD)</option>
@@ -798,13 +950,13 @@ function createLocalVideoTile(id, labelText, stream) {
           <option value="1440" ${state.screenSettings.resolution === '1440' ? 'selected' : ''}>1440p (2K)</option>
           <option value="4k" ${state.screenSettings.resolution === '4k' ? 'selected' : ''}>4K (UHD)</option>
         </select>
-        <label style="font-size: 0.75rem;">FPS:</label>
+        <label style="font-size: 0.75rem;">${t('fps')}</label>
         <select id="fps-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
           <option value="30" ${state.screenSettings.fps === '30' ? 'selected' : ''}>30 FPS</option>
           <option value="60" ${state.screenSettings.fps === '60' ? 'selected' : ''}>60 FPS</option>
           <option value="15" ${state.screenSettings.fps === '15' ? 'selected' : ''}>15 FPS</option>
         </select>
-        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-fullscreen-${id}">Tela Cheia</button>
+        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-fullscreen-${id}">${t('fullscreen')}</button>
       </div>
     </div>
     <div class="video-wrapper">
@@ -864,7 +1016,6 @@ function createLocalVideoTile(id, labelText, stream) {
   return card;
 }
 
-// Create Remote Viewer Video Tile with WebAudio Volume Control & LocalStorage Persistence
 function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
   const card = document.createElement('div');
   card.className = 'video-card size-small';
@@ -874,7 +1025,6 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
   const isCam = streamKey.includes('-cam');
   const uname = state.activeRemoteStreams.get(streamKey)?.username || state.roomMembers.get(peerId) || peerId.substring(0, 8);
 
-  // Load saved volume & mute state from localStorage for session continuity
   const savedState = getSavedVolumeState(streamKey, uname, isCam);
   let currentVolume = savedState.volume;
   let isMutedState = savedState.muted;
@@ -884,22 +1034,22 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
     <div class="video-header" id="header-${id}">
       <span>${labelText}</span>
       <div class="video-controls-inline">
-        <label style="font-size: 0.75rem;">Tam:</label>
+        <label style="font-size: 0.75rem;">${t('size')}</label>
         <select id="size-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="size-small" selected>Pequeno</option>
-          <option value="size-medium">Médio</option>
-          <option value="size-large">Grande</option>
+          <option value="size-small" selected>${t('small')}</option>
+          <option value="size-medium">${t('medium')}</option>
+          <option value="size-large">${t('large')}</option>
         </select>
 
-        <label style="font-size: 0.75rem;">Delay:</label>
+        <label style="font-size: 0.75rem;">${t('delay')}</label>
         <select id="buf-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="5" selected>5.0s (Padrão)</option>
-          <option value="3">3.0s (Médio)</option>
-          <option value="1">1.0s (Baixo)</option>
-          <option value="0.25">0.25s (Mínimo)</option>
+          <option value="5" selected>${t('delay5s')}</option>
+          <option value="3">${t('delay3s')}</option>
+          <option value="1">${t('delay1s')}</option>
+          <option value="0.25">${t('delay025s')}</option>
         </select>
 
-        <label style="font-size: 0.75rem;">Res:</label>
+        <label style="font-size: 0.75rem;">${t('res')}</label>
         <select id="res-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
           <option value="480" selected>480p</option>
           <option value="720">720p</option>
@@ -908,7 +1058,7 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
           <option value="4k">4K</option>
         </select>
 
-        <label style="font-size: 0.75rem;">FPS:</label>
+        <label style="font-size: 0.75rem;">${t('fps')}</label>
         <select id="fps-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
           <option value="30" selected>30 FPS</option>
           <option value="60">60 FPS</option>
@@ -916,23 +1066,23 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
         </select>
 
         <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-mute-${id}">
-          ${isMutedState || currentVolume === 0 ? 'Desmutar' : 'Mutar'}
+          ${isMutedState || currentVolume === 0 ? t('unmute') : t('mute')}
         </button>
         
         <div class="volume-container">
-          <label style="font-size: 0.75rem;">Vol:</label>
+          <label style="font-size: 0.75rem;">${t('vol')}</label>
           <input type="range" id="vol-range-${id}" class="volume-slider" min="0" max="100" value="${currentVolume}">
           <input type="number" id="vol-num-${id}" class="volume-number-input" min="0" max="100" value="${currentVolume}">%
         </div>
 
-        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-fullscreen-${id}">Tela Cheia</button>
-        <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-close-${id}">Fechar Tela</button>
+        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-fullscreen-${id}">${t('fullscreen')}</button>
+        <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-close-${id}">${t('closeStream')}</button>
       </div>
     </div>
     <div class="video-wrapper">
       <video id="video-el-${id}" class="video-element" autoplay playsinline muted></video>
       <div class="audio-prompt-overlay" id="overlay-${id}" style="display: none;">
-        <button class="btn" id="btn-watch-${id}" style="padding: 0.75rem 1.5rem; font-size: 1rem;">Assistir Transmissão</button>
+        <button class="btn" id="btn-watch-${id}" style="padding: 0.75rem 1.5rem; font-size: 1rem;">${t('watchStream')}</button>
       </div>
     </div>
   `;
@@ -952,7 +1102,6 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
     const fpsSel = card.querySelector(`#fps-sel-${id}`);
     const header = card.querySelector(`#header-${id}`);
 
-    // Set up WebAudio for Chrome/browser-compatible volume & muting
     cleanupRemoteAudioNodes(streamKey);
 
     let audioSourceNode = null;
@@ -984,7 +1133,6 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
       stream.onaddtrack = () => setupAudioPipeline();
     }
 
-    // Attach ONLY video tracks to <video> element to prevent Chrome unattenuated WebRTC audio bypass
     if (video && stream) {
       const videoTracks = stream.getVideoTracks();
       if (videoTracks.length > 0) {
@@ -992,7 +1140,7 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
       } else {
         video.srcObject = stream;
       }
-      video.muted = true; // Video element stays muted; WebAudio outputs the audio cleanly
+      video.muted = true;
 
       applyStreamPlayoutBuffer(video, peerCall, 5.0);
 
@@ -1007,7 +1155,6 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
       }
     }
 
-    // Apply Volume Function
     const applyVolume = (percent, isMuted) => {
       const clamped = Math.max(0, Math.min(100, parseInt(percent, 10) || 0));
       currentVolume = clamped;
@@ -1021,10 +1168,9 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
       if (volRange) volRange.value = clamped;
 
       if (muteBtn) {
-        muteBtn.innerText = isMutedState ? 'Desmutar' : 'Mutar';
+        muteBtn.innerText = isMutedState ? t('unmute') : t('mute');
       }
 
-      // 1. WebAudio GainNode scaling
       if (gainNode) {
         const ctx = getAudioContext();
         const gainVal = isMutedState ? 0 : (clamped / 100);
@@ -1035,21 +1181,17 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
         }
       }
 
-      // 2. Hardware / stream track muting
       if (stream) {
         stream.getAudioTracks().forEach(track => {
           track.enabled = !isMutedState;
         });
       }
 
-      // 3. Persist state to localStorage for session continuity
       saveVolumeState(streamKey, uname, isCam, currentVolume, isMutedState);
     };
 
-    // Initialize with loaded localStorage values
     applyVolume(currentVolume, isMutedState);
 
-    // Event listeners
     if (volNum) {
       volNum.addEventListener('input', (e) => applyVolume(e.target.value, false));
       volNum.addEventListener('change', (e) => applyVolume(e.target.value, false));
@@ -1137,7 +1279,6 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
   return card;
 }
 
-// PeerJS Engine with Password Support & Username Identity
 function enterRoom(roomCode, password = '') {
   state.roomCode = roomCode;
   state.roomPassword = password;
@@ -1180,12 +1321,12 @@ function setupHostListeners() {
     conn.on('data', (data) => {
       if (data.type === 'AUTH') {
         if (state.roomPassword && data.password !== state.roomPassword) {
-          conn.send({ type: 'AUTH_FAILED', message: 'Senha incorreta!' });
+          conn.send({ type: 'AUTH_FAILED', message: t('incorrectPassword') });
           setTimeout(() => conn.close(), 300);
           return;
         }
 
-        const peerUsername = data.username || 'Usuário';
+        const peerUsername = data.username || t('defaultUsername');
         state.dataConnections.set(conn.peer, conn);
         state.roomMembers.set(conn.peer, peerUsername);
         state.lastHeartbeat.set(conn.peer, Date.now());
@@ -1287,14 +1428,14 @@ function promptForPassword(hostPeerId) {
   container.innerHTML = `
     <div class="modal-overlay">
       <div class="modal-card">
-        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Sala Protegida por Senha</h3>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Digite a senha correta para acessar a sala:</p>
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">${t('protectedRoomModalTitle')}</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">${t('protectedRoomModalDesc')}</p>
         <div class="field-group">
-          <input type="password" id="modal-pass-input" placeholder="Senha da sala">
+          <input type="password" id="modal-pass-input" placeholder="${t('placeholderRoomPasswordModal')}">
         </div>
         <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
-          <button class="btn btn-secondary" id="modal-cancel-btn">Cancelar</button>
-          <button class="btn" id="modal-submit-btn">Entrar</button>
+          <button class="btn btn-secondary" id="modal-cancel-btn">${t('cancel')}</button>
+          <button class="btn" id="modal-submit-btn">${t('enter')}</button>
         </div>
       </div>
     </div>
@@ -1326,7 +1467,6 @@ function setupCommonPeerListeners() {
     const streamKey = isCam ? `${call.peer}-cam` : `${call.peer}-screen`;
     const username = (call.metadata && call.metadata.username) || state.roomMembers.get(call.peer) || call.peer.substring(0, 8);
 
-    // Deduplicate existing calls
     if (state.activeRemoteStreams.has(streamKey)) {
       removeRemoteStream(streamKey);
     }
@@ -1358,7 +1498,7 @@ function handleDataMessage(fromPeer, data) {
     if (Array.isArray(data.members)) {
       data.members.forEach((m) => {
         const peerId = typeof m === 'object' ? m.peerId : m;
-        const uname = typeof m === 'object' ? m.username : 'Usuário';
+        const uname = typeof m === 'object' ? m.username : t('defaultUsername');
 
         if (peerId !== state.myPeerId) {
           state.roomMembers.set(peerId, uname);
@@ -1432,7 +1572,8 @@ function updateMemberCountLabel() {
   const lbl = document.getElementById('member-count-label');
   if (lbl) {
     const count = state.roomMembers.size;
-    lbl.innerText = `(${count} pessoa${count === 1 ? '' : 's'} na sala)`;
+    const label = count === 1 ? t('person') : t('people');
+    lbl.innerText = t('peopleInRoom', { count, label });
   }
 }
 
@@ -1466,7 +1607,6 @@ function getQualityVideoConstraints() {
   return videoConstraints;
 }
 
-// Screen Sharing - Default 5s delay, 480p, 30 FPS
 async function startMyScreenShare() {
   try {
     const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -1489,15 +1629,13 @@ async function startMyScreenShare() {
 
     const btn = document.getElementById('btn-toggle-share');
     if (btn) {
-      btn.innerText = 'Parar de Compartilhar';
+      btn.innerText = t('stopShareScreen');
       btn.className = 'btn btn-danger';
     }
 
     updateVideoGrid();
 
-  } catch (err) {
-    // Silenced error toasts per user request
-  }
+  } catch (err) {}
 }
 
 function stopMyScreenShare() {
@@ -1514,7 +1652,7 @@ function stopMyScreenShare() {
 
   const btn = document.getElementById('btn-toggle-share');
   if (btn) {
-    btn.innerText = 'Compartilhar Minha Tela';
+    btn.innerText = t('shareScreen');
     btn.className = 'btn';
   }
 
@@ -1524,7 +1662,6 @@ function stopMyScreenShare() {
   updateVideoGrid();
 }
 
-// Webcam Sharing
 async function startMyWebcam() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -1549,15 +1686,13 @@ async function startMyWebcam() {
 
     const btn = document.getElementById('btn-toggle-cam');
     if (btn) {
-      btn.innerText = 'Desligar Câmera';
+      btn.innerText = t('turnOffCam');
       btn.className = 'btn btn-danger';
     }
 
     updateVideoGrid();
 
-  } catch (err) {
-    // Silenced per request
-  }
+  } catch (err) {}
 }
 
 function stopMyWebcam() {
@@ -1574,7 +1709,7 @@ function stopMyWebcam() {
 
   const btn = document.getElementById('btn-toggle-cam');
   if (btn) {
-    btn.innerText = 'Ligar Câmera';
+    btn.innerText = t('turnOnCam');
     btn.className = 'btn btn-secondary';
   }
 
