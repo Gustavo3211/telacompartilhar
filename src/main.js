@@ -1,6 +1,34 @@
 import './style.css';
 import Peer from 'peerjs';
 
+// SVG Vector Icons System
+const icons = {
+  settings: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  volHigh: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
+  volMed: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`,
+  volLow: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>`,
+  volMute: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`,
+  maximize: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`,
+  close: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  grip: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>`,
+  monitor: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+  camera: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+  rotate: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>`,
+  flask: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55A1 1 0 0 0 5.607 22h12.786a1 1 0 0 0 .886-1.45l-5.068-10.126A2 2 0 0 1 14 9.527V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/><path d="M8.5 14h7"/></svg>`,
+  size: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>`,
+  share: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+  link: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
+  layout: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>`,
+  leave: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+  search: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  cursorClick: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>`,
+  user: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  users: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  lock: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  eye: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  eyeOff: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+};
+
 // i18n Translation System
 const translations = {
   pt: {
@@ -16,9 +44,9 @@ const translations = {
     placeholderPassword: 'Digite uma senha personalizada se desejar',
     createRoomBtn: 'Criar Sala e Compartilhar Link',
     defaultUserPrefix: 'Usuário_',
-    roomLink: 'Link da Sala:',
+    roomLink: 'Sala:',
     protectedByPassword: 'Protegida por Senha',
-    peopleInRoom: '({count} {label} na sala)',
+    peopleInRoom: '{count} {label} na sala',
     person: 'pessoa',
     people: 'pessoas',
     shareScreen: 'Compartilhar Minha Tela',
@@ -27,6 +55,14 @@ const translations = {
     turnOffCam: 'Desligar Câmera',
     resetLayout: 'Resetar Layout',
     syncStreams: 'Sincronizar Transmissões',
+    searchStreams: 'Procurar Tela',
+    searchingToast: 'Procurando transmissões na sala...',
+    moveHere: 'Ir pra cá',
+    emptySlot: 'Espaço Vazio',
+    connectedUsersTitle: 'Usuários na Sala',
+    youTag: 'Você',
+    hideRoomCode: 'Ocultar Código',
+    showRoomCode: 'Mostrar Código',
     copyLink: 'Copiar Link',
     leave: 'Sair',
     emptyState: 'Nenhuma tela ou câmera está sendo compartilhada no momento.<br>Qualquer pessoa conectada pode clicar em <strong>"Compartilhar Minha Tela"</strong> ou <strong>"Ligar Câmera"</strong> para transmitir.',
@@ -61,6 +97,40 @@ const translations = {
     enter: 'Entrar',
     incorrectPassword: 'Senha incorreta!',
     defaultUsername: 'Usuário',
+    devToolBtn: 'Testar Layouts',
+    devModalTitle: 'Testador de Layouts & Telas Falsas',
+    devModalSubtitle: 'Simule transmissões falsas e teste a interface em múltiplos tamanhos de tela em tempo real.',
+    sectionFakeStreams: '1. Telas / Transmissões Falsas (Grid)',
+    add1FakeStream: '+1 Tela Falsa (16:9)',
+    add4FakeStreams: '+4 Telas (Grade)',
+    add6FakeStreams: '+6 Telas (Grade)',
+    addMobileFakeStream: '+1 Mobile (9:16)',
+    addCamFakeStream: '+1 Câmera Falsa (4:3)',
+    clearFakeStreams: 'Limpar Telas Falsas',
+    sectionDeviceViewport: '2. Simulador de Dispositivo / Viewport',
+    presetDesktop: 'Desktop Full HD (1920x1080)',
+    presetLaptop: 'Laptop (1366x768)',
+    presetTabletPort: 'Tablet Em Pé (768x1024)',
+    presetTabletLand: 'Tablet Deitado (1024x768)',
+    presetMobilePort: 'Celular Em Pé (375x812)',
+    presetMobileLand: 'Celular Deitado (812x375)',
+    presetUltrawide: 'Ultrawide (2560x1080)',
+    applyDeviceViewport: 'Ativar Simulador de Tela',
+    resetDeviceViewport: 'Restaurar Tela Normal',
+    simulatingDevice: 'Simulando:',
+    rotateDevice: 'Girar',
+    zoomFit: 'Ajustar Zoom',
+    closeDevModal: 'Fechar',
+    settings: 'Configurações',
+    tileSettingsTitle: 'Configurações',
+    cardSizeLabel: 'Tamanho no Grid',
+    displayResLabel: 'Escala de Exibição (Local)',
+    displayResDesc: 'Reduz o consumo local da GPU sem alterar o apresentador.',
+    delayLabel: 'Buffer de Delay',
+    delayDesc: 'Previne travamentos de vídeo/áudio.',
+    broadcastResLabel: 'Resolução de Envio',
+    broadcastResDesc: 'Qualidade transmitida para os espectadores.',
+    fpsLabel: 'Taxa de FPS',
   },
   en: {
     appTitle: 'Shared Screen Share',
@@ -75,9 +145,9 @@ const translations = {
     placeholderPassword: 'Enter a custom password if desired',
     createRoomBtn: 'Create Room & Share Link',
     defaultUserPrefix: 'User_',
-    roomLink: 'Room Link:',
+    roomLink: 'Room:',
     protectedByPassword: 'Password Protected',
-    peopleInRoom: '({count} {label} in room)',
+    peopleInRoom: '{count} {label} in room',
     person: 'person',
     people: 'people',
     shareScreen: 'Share My Screen',
@@ -86,6 +156,14 @@ const translations = {
     turnOffCam: 'Turn Off Camera',
     resetLayout: 'Reset Layout',
     syncStreams: 'Sync Streams',
+    searchStreams: 'Find Streams',
+    searchingToast: 'Scanning for active streams...',
+    moveHere: 'Move here',
+    emptySlot: 'Empty Space',
+    connectedUsersTitle: 'Users in Room',
+    youTag: 'You',
+    hideRoomCode: 'Hide Code',
+    showRoomCode: 'Show Code',
     copyLink: 'Copy Link',
     leave: 'Leave',
     emptyState: 'No screen or camera is currently being shared.<br>Anyone connected can click <strong>"Share My Screen"</strong> or <strong>"Turn On Camera"</strong> to stream.',
@@ -120,6 +198,40 @@ const translations = {
     enter: 'Enter',
     incorrectPassword: 'Incorrect password!',
     defaultUsername: 'User',
+    devToolBtn: 'Test Layouts',
+    devModalTitle: 'Layout & Fake Screen Tester',
+    devModalSubtitle: 'Simulate mock video streams and test the interface across multiple screen sizes in real-time.',
+    sectionFakeStreams: '1. Fake Streams (Grid Test)',
+    add1FakeStream: '+1 Fake Screen (16:9)',
+    add4FakeStreams: '+4 Screens (Grid)',
+    add6FakeStreams: '+6 Screens (Grid)',
+    addMobileFakeStream: '+1 Mobile (9:16)',
+    addCamFakeStream: '+1 Fake Camera (4:3)',
+    clearFakeStreams: 'Clear Fake Streams',
+    sectionDeviceViewport: '2. Device Viewport Simulator',
+    presetDesktop: 'Desktop Full HD (1920x1080)',
+    presetLaptop: 'Laptop (1366x768)',
+    presetTabletPort: 'Tablet Portrait (768x1024)',
+    presetTabletLand: 'Tablet Landscape (1024x768)',
+    presetMobilePort: 'Mobile Portrait (375x812)',
+    presetMobileLand: 'Mobile Landscape (812x375)',
+    presetUltrawide: 'Ultrawide (2560x1080)',
+    applyDeviceViewport: 'Apply Device Viewport',
+    resetDeviceViewport: 'Reset Full Screen',
+    simulatingDevice: 'Simulating:',
+    rotateDevice: 'Rotate',
+    zoomFit: 'Fit Zoom',
+    closeDevModal: 'Close',
+    settings: 'Settings',
+    tileSettingsTitle: 'Settings',
+    cardSizeLabel: 'Card Size in Grid',
+    displayResLabel: 'Display Scale (Local)',
+    displayResDesc: 'Reduces rendering load locally without touching host video.',
+    delayLabel: 'Buffer Delay',
+    delayDesc: 'Prevents video/audio stuttering.',
+    broadcastResLabel: 'Broadcast Resolution',
+    broadcastResDesc: 'Sets quality sent to viewers.',
+    fpsLabel: 'FPS Rate',
   }
 };
 
@@ -152,6 +264,9 @@ function setLanguage(lang) {
   const floatBtn = document.getElementById('floating-toggle-btn');
   if (floatBtn) floatBtn.innerText = t('showInterface');
 
+  const devFab = document.getElementById('dev-fab-btn');
+  if (devFab) devFab.innerText = t('devToolBtn');
+
   if (state.isAuthenticated && state.roomCode) {
     renderRoomView();
   } else {
@@ -183,7 +298,8 @@ const state = {
   autoQualityInterval: null,
   heartbeatInterval: null,
   lastHeartbeat: new Map(),
-  isToolbarHidden: false
+  isToolbarHidden: false,
+  isRoomCodeHidden: false
 };
 
 // Render Shell
@@ -194,8 +310,8 @@ document.getElementById('app').innerHTML = `
       <div style="display: flex; align-items: center; gap: 0.75rem;">
         <div id="header-status" style="font-size: 0.9rem; color: var(--text-muted);">${t('statusDisconnected')}</div>
         <select id="lang-select" class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.85rem; cursor: pointer; background: var(--bg-card); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px;">
-          <option value="pt" ${currentLang === 'pt' ? 'selected' : ''}>🇧🇷 PT</option>
-          <option value="en" ${currentLang === 'en' ? 'selected' : ''}>🇺🇸 EN</option>
+          <option value="pt" ${currentLang === 'pt' ? 'selected' : ''}>PT-BR</option>
+          <option value="en" ${currentLang === 'en' ? 'selected' : ''}>EN-US</option>
         </select>
       </div>
     </div>
@@ -205,6 +321,9 @@ document.getElementById('app').innerHTML = `
   </main>
 
   <button id="floating-toggle-btn" class="btn btn-secondary floating-toggle-btn" style="display: none;">${t('showInterface')}</button>
+  <button id="dev-fab-btn" class="dev-floating-fab" style="display: flex; align-items: center; gap: 0.4rem;">${icons.flask} <span>${t('devToolBtn')}</span></button>
+
+  <div id="dev-modal-container"></div>
   <div id="modal-container"></div>
   <div class="toast-container" id="toast-container" style="display: none;"></div>
 `;
@@ -213,6 +332,261 @@ document.title = t('appTitle');
 
 document.getElementById('lang-select').addEventListener('change', (e) => {
   setLanguage(e.target.value);
+});
+
+// --- Dev Layout & Device Simulator Engine ---
+let fakeStreamSeq = 0;
+const fakeAnimFrames = new Map();
+
+function createFakeStreamCanvas(opts = {}) {
+  fakeStreamSeq++;
+  const id = opts.id || `fake-${fakeStreamSeq}`;
+  const width = opts.width || 1280;
+  const height = opts.height || 720;
+  const title = opts.title || `Tela Falsa #${fakeStreamSeq}`;
+  const isCam = !!opts.isCam;
+  const isMobile = !!opts.isMobile;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  let ballX = width / 2;
+  let ballY = height / 2;
+  let ballDX = (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4);
+  let ballDY = (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4);
+
+  const colors = ['#2563eb', '#7c3aed', '#db2777', '#059669', '#d97706', '#0891b2'];
+  const themeColor = colors[(fakeStreamSeq - 1) % colors.length];
+
+  function draw() {
+    // Canvas background
+    const grad = ctx.createLinearGradient(0, 0, width, height);
+    grad.addColorStop(0, '#111827');
+    grad.addColorStop(1, '#1f2937');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    // Grid pattern
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.lineWidth = 1;
+    const step = 40;
+    for (let x = 0; x < width; x += step) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    for (let y = 0; y < height; y += step) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    // Bouncing sphere
+    ballX += ballDX;
+    ballY += ballDY;
+    if (ballX <= 35 || ballX >= width - 35) ballDX *= -1;
+    if (ballY <= 35 || ballY >= height - 35) ballDY *= -1;
+
+    ctx.fillStyle = themeColor;
+    ctx.shadowColor = themeColor;
+    ctx.shadowBlur = 18;
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 28, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Header bar
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, width, 54);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`${isCam ? '📷' : '💻'} ${title}`, 20, 34);
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString();
+    ctx.textAlign = 'right';
+    ctx.font = '16px monospace';
+    ctx.fillStyle = '#60a5fa';
+    ctx.fillText(`SIMULATED LIVE • ${timeStr}`, width - 20, 34);
+
+    // Center Info Card
+    const cardW = Math.min(width - 40, isMobile ? 320 : 440);
+    const cardH = 150;
+    const cardX = (width - cardW) / 2;
+    const cardY = (height - cardH) / 2;
+
+    ctx.fillStyle = 'rgba(24, 24, 27, 0.85)';
+    ctx.strokeStyle = themeColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(cardX, cardY, cardW, cardH, 12);
+    } else {
+      ctx.rect(cardX, cardY, cardW, cardH);
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px system-ui, sans-serif';
+    ctx.fillText(title, width / 2, cardY + 42);
+
+    ctx.fillStyle = '#a1a1aa';
+    ctx.font = '14px system-ui, sans-serif';
+    ctx.fillText(isCam ? 'Transmissão Simulada de Câmera (4:3)' : (isMobile ? 'Transmissão Simulada Mobile (9:16)' : 'Transmissão Simulada de Tela (16:9)'), width / 2, cardY + 75);
+
+    ctx.fillStyle = '#34d399';
+    ctx.font = '13px monospace';
+    ctx.fillText(`Resolução: ${width}x${height} • 60 FPS • Simulated`, width / 2, cardY + 110);
+
+    // Audio Equalizer Waveform
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, height - 32, width, 32);
+
+    const bars = Math.floor(width / 24);
+    const barW = width / bars;
+    ctx.fillStyle = themeColor;
+    for (let i = 0; i < bars; i++) {
+      const h = Math.sin(Date.now() / 180 + i) * 12 + 14;
+      ctx.fillRect(i * barW + 2, height - h, barW - 4, h);
+    }
+
+    const frameId = requestAnimationFrame(draw);
+    fakeAnimFrames.set(id, frameId);
+  }
+
+  draw();
+
+  const stream = canvas.captureStream(30);
+  return { id, stream };
+}
+
+function addFakeStreams(count = 1, type = 'screen') {
+  if (!state.isAuthenticated || !state.roomCode) {
+    enterRoom('dev-sandbox', '');
+  }
+
+  for (let i = 0; i < count; i++) {
+    const isCam = type === 'cam';
+    const isMobile = type === 'mobile';
+    const width = isMobile ? 720 : (isCam ? 640 : 1280);
+    const height = isMobile ? 1280 : (isCam ? 480 : 720);
+
+    fakeStreamSeq++;
+    const streamKey = `fake-peer-${fakeStreamSeq}-${isCam ? 'cam' : 'screen'}`;
+    const uname = isCam ? `Câmera #${fakeStreamSeq}` : (isMobile ? `Mobile #${fakeStreamSeq}` : `Tela Falsa #${fakeStreamSeq}`);
+
+    const fakeObj = createFakeStreamCanvas({
+      id: streamKey,
+      title: uname,
+      width,
+      height,
+      isCam,
+      isMobile
+    });
+
+    state.activeRemoteStreams.set(streamKey, {
+      stream: fakeObj.stream,
+      call: null,
+      peerId: `fake-peer-${fakeStreamSeq}`,
+      username: uname,
+      isFake: true
+    });
+  }
+
+  updateVideoGrid();
+}
+
+function clearFakeStreams() {
+  state.activeRemoteStreams.forEach((data, key) => {
+    if (data.isFake || key.startsWith('fake-peer-')) {
+      if (data.stream) {
+        data.stream.getTracks().forEach(t => t.stop());
+      }
+      const frameId = fakeAnimFrames.get(key);
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+        fakeAnimFrames.delete(key);
+      }
+      state.activeRemoteStreams.delete(key);
+    }
+  });
+  updateVideoGrid();
+}
+
+function openDevModal() {
+  const container = document.getElementById('dev-modal-container');
+  if (!container) return;
+
+  const count = state.activeRemoteStreams.size;
+
+  container.innerHTML = `
+    <div class="modal-overlay">
+      <div class="dev-modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.15rem; font-weight: 700;">${t('devModalTitle')}</h3>
+          <button class="btn btn-secondary" id="dev-modal-close" style="padding: 0.25rem 0.6rem; font-size: 0.8rem;">✕</button>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          ${t('devModalSubtitle')}
+        </p>
+
+        <!-- Fake Streams Simulator -->
+        <div class="dev-section-title">
+          <span>${t('sectionFakeStreams')}</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">(${count} ativas)</span>
+        </div>
+        <div class="dev-btn-grid">
+          <button class="btn" id="btn-add-1-fake">${t('add1FakeStream')}</button>
+          <button class="btn" id="btn-add-4-fake">${t('add4FakeStreams')}</button>
+          <button class="btn" id="btn-add-6-fake">${t('add6FakeStreams')}</button>
+          <button class="btn btn-secondary" id="btn-add-mob-fake">${t('addMobileFakeStream')}</button>
+          <button class="btn btn-secondary" id="btn-add-cam-fake">${t('addCamFakeStream')}</button>
+          <button class="btn btn-danger" id="btn-clear-fakes">${t('clearFakeStreams')}</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('dev-modal-close').addEventListener('click', () => {
+    container.innerHTML = '';
+  });
+
+  document.getElementById('btn-add-1-fake').addEventListener('click', () => {
+    addFakeStreams(1, 'screen');
+    openDevModal();
+  });
+  document.getElementById('btn-add-4-fake').addEventListener('click', () => {
+    addFakeStreams(4, 'screen');
+    openDevModal();
+  });
+  document.getElementById('btn-add-6-fake').addEventListener('click', () => {
+    addFakeStreams(6, 'screen');
+    openDevModal();
+  });
+  document.getElementById('btn-add-mob-fake').addEventListener('click', () => {
+    addFakeStreams(1, 'mobile');
+    openDevModal();
+  });
+  document.getElementById('btn-add-cam-fake').addEventListener('click', () => {
+    addFakeStreams(1, 'cam');
+    openDevModal();
+  });
+  document.getElementById('btn-clear-fakes').addEventListener('click', () => {
+    clearFakeStreams();
+    openDevModal();
+  });
+}
+
+document.getElementById('dev-fab-btn').addEventListener('click', () => {
+  openDevModal();
 });
 
 function showToast(msg, duration = 4000) {
@@ -320,21 +694,36 @@ function renderRoomView() {
   const label = count === 1 ? t('person') : t('people');
 
   main.innerHTML = `
-    <div class="room-bar" id="main-room-bar">
-      <div class="room-info">
-        <span>${t('roomLink')}</span>
-        ${state.roomPassword ? `<span style="font-size: 0.8rem; color: #f59e0b; background: rgba(245,158,11,0.1); padding: 0.2rem 0.5rem; border-radius: 4px;">${t('protectedByPassword')}</span>` : ''}
-        <span id="member-count-label" style="font-size: 0.9rem; color: var(--text-muted);">${t('peopleInRoom', { count, label })}</span>
+    <div class="room-top-bar" id="main-room-bar">
+      <div class="top-bar-left">
+        <button class="top-bar-chip room-link-chip" id="top-bar-copy-link" title="${t('copyLink')}">
+          <span class="chip-icon">${icons.link}</span>
+          <span class="room-code-label">${t('roomLink')} <strong id="room-code-text">${state.isRoomCodeHidden ? '••••••••' : state.roomCode}</strong></span>
+          <span class="toggle-room-visibility" id="btn-toggle-room-code" title="${state.isRoomCodeHidden ? t('showRoomCode') : t('hideRoomCode')}">
+            ${state.isRoomCodeHidden ? icons.eyeOff : icons.eye}
+          </span>
+          ${state.roomPassword ? `<span class="pwd-badge" title="${t('protectedByPassword')}">${icons.lock}</span>` : ''}
+          <span class="copy-badge">${t('copyLink')}</span>
+        </button>
       </div>
 
-      <div class="room-actions">
-        <button class="btn" id="btn-toggle-share">${state.myScreenStream ? t('stopShareScreen') : t('shareScreen')}</button>
-        <button class="btn ${state.myCameraStream ? 'btn-danger' : 'btn-secondary'}" id="btn-toggle-cam">${state.myCameraStream ? t('turnOffCam') : t('turnOnCam')}</button>
-        <button class="btn btn-secondary" id="btn-reset-layout">${t('resetLayout')}</button>
-        <button class="btn btn-secondary" id="btn-sync-streams">${t('syncStreams')}</button>
-        <button class="btn btn-secondary" id="btn-toggle-toolbar">${t('hideInterface')}</button>
-        <button class="btn btn-secondary" id="btn-copy">${t('copyLink')}</button>
-        <button class="btn btn-danger" id="btn-leave">${t('leave')}</button>
+      <div class="top-bar-right">
+        <div class="users-popover-wrapper">
+          <button class="top-bar-chip users-chip" id="top-bar-users-btn" title="${t('connectedUsersTitle')}">
+            <span class="chip-icon">${icons.users}</span>
+            <span id="member-count-label">${t('peopleInRoom', { count, label })}</span>
+          </button>
+
+          <div class="users-dropdown-popover" id="users-dropdown-popover">
+            <div class="users-popover-header">
+              <span style="font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; color: #f8fafc;">
+                ${icons.users} ${t('connectedUsersTitle')} (<span id="popover-member-count">${count}</span>)
+              </span>
+            </div>
+            <ul class="users-list-ul" id="users-list-ul">
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -344,7 +733,94 @@ function renderRoomView() {
     <div id="empty-state" class="empty-state">
       ${t('emptyState')}
     </div>
+
+    <nav class="bottom-dock-toolbar" id="bottom-dock-toolbar">
+      <button class="btn ${state.myScreenStream ? 'btn-danger' : 'btn-primary'} dock-btn" id="btn-toggle-share">
+        ${icons.share} <span>${state.myScreenStream ? t('stopShareScreen') : t('shareScreen')}</span>
+      </button>
+
+      <button class="btn ${state.myCameraStream ? 'btn-danger' : 'btn-secondary'} dock-btn" id="btn-toggle-cam">
+        ${icons.camera} <span>${state.myCameraStream ? t('turnOffCam') : t('turnOnCam')}</span>
+      </button>
+
+      <button class="btn btn-secondary dock-btn" id="btn-search-streams">
+        ${icons.search} <span>${t('searchStreams')}</span>
+      </button>
+
+      <button class="btn btn-secondary dock-btn" id="btn-copy">
+        ${icons.link} <span>${t('copyLink')}</span>
+      </button>
+
+      <button class="btn btn-secondary dock-btn" id="btn-reset-layout">
+        ${icons.layout} <span>${t('resetLayout')}</span>
+      </button>
+
+      <button class="btn btn-danger dock-btn" id="btn-leave">
+        ${icons.leave} <span>${t('leave')}</span>
+      </button>
+    </nav>
   `;
+
+  // Copy Link in Top Bar
+  const copyBtn = document.getElementById('top-bar-copy-link');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      let url = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
+      if (state.roomPassword) {
+        url += `&pwd=${encodeURIComponent(state.roomPassword)}`;
+      }
+      navigator.clipboard.writeText(url);
+      showToast('Link da sala copiado!', 'info');
+      copyBtn.classList.add('copied');
+      setTimeout(() => copyBtn.classList.remove('copied'), 1500);
+    });
+  }
+
+  // Toggle Room Code Visibility
+  const toggleVisibilityBtn = document.getElementById('btn-toggle-room-code');
+  if (toggleVisibilityBtn) {
+    toggleVisibilityBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.isRoomCodeHidden = !state.isRoomCodeHidden;
+
+      const textEl = document.getElementById('room-code-text');
+      if (textEl) {
+        textEl.innerText = state.isRoomCodeHidden ? '••••••••' : state.roomCode;
+      }
+      toggleVisibilityBtn.innerHTML = state.isRoomCodeHidden ? icons.eyeOff : icons.eye;
+      toggleVisibilityBtn.title = state.isRoomCodeHidden ? t('showRoomCode') : t('hideRoomCode');
+    });
+  }
+
+  // Connected Users Popover
+  const usersBtn = document.getElementById('top-bar-users-btn');
+  const usersPopover = document.getElementById('users-dropdown-popover');
+  if (usersBtn && usersPopover) {
+    usersBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      usersPopover.classList.toggle('active');
+      renderUsersList();
+    });
+
+    document.addEventListener('pointerdown', (e) => {
+      if (!e.target.closest('.users-popover-wrapper')) {
+        usersPopover.classList.remove('active');
+      }
+    });
+  }
+
+  renderUsersList();
+
+  document.getElementById('btn-search-streams').addEventListener('click', () => {
+    const icon = document.querySelector('#btn-search-streams svg');
+    if (icon) {
+      icon.style.transition = 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      icon.style.transform = 'rotate(360deg)';
+      setTimeout(() => { icon.style.transform = ''; icon.style.transition = ''; }, 650);
+    }
+    syncStreams();
+    showToast(t('searchingToast'), 'info');
+  });
 
   document.getElementById('btn-copy').addEventListener('click', () => {
     let url = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
@@ -352,18 +828,11 @@ function renderRoomView() {
       url += `&pwd=${encodeURIComponent(state.roomPassword)}`;
     }
     navigator.clipboard.writeText(url);
-  });
-
-  document.getElementById('btn-toggle-toolbar').addEventListener('click', () => {
-    toggleToolbar(true);
+    showToast('Link da sala copiado!', 'info');
   });
 
   document.getElementById('btn-reset-layout').addEventListener('click', () => {
     resetBoardLayout();
-  });
-
-  document.getElementById('btn-sync-streams').addEventListener('click', () => {
-    syncStreams();
   });
 
   document.getElementById('btn-leave').addEventListener('click', () => {
@@ -701,58 +1170,413 @@ async function applyRealtimeQuality(stream, resVal, fpsVal) {
   } catch (err) {}
 }
 
-function makeCardDraggable(card, header) {
-  let isDragging = false;
+let activeSwapSourceCard = null;
 
-  header.addEventListener('pointerdown', (e) => {
-    const targetTag = e.target.tagName;
-    if (targetTag === 'BUTTON' || targetTag === 'SELECT' || targetTag === 'INPUT' || targetTag === 'LABEL') {
+function createSpacerCard() {
+  const spacer = document.createElement('div');
+  spacer.className = 'video-card spacer-card size-small';
+  spacer.dataset.spacer = 'true';
+  spacer.id = `spacer-${Math.random().toString(36).substring(2, 9)}`;
+  spacer.innerHTML = `
+    <div class="spacer-inner">
+      <span class="spacer-icon">${icons.layout}</span>
+      <span class="spacer-label">${t('emptySlot')}</span>
+    </div>
+  `;
+  makeCardDraggable(spacer, spacer);
+  return spacer;
+}
+
+function fillGridWithSpacers(grid) {
+  if (!grid) return;
+  const cards = Array.from(grid.querySelectorAll('.video-card'));
+  const realCards = cards.filter(c => !c.dataset.spacer);
+
+  if (realCards.length === 0) return;
+
+  const remainder = realCards.length % 3;
+  if (remainder !== 0) {
+    const needed = 3 - remainder;
+    const lastCard = realCards[realCards.length - 1];
+
+    let current = lastCard;
+    for (let i = 0; i < needed; i++) {
+      const next = current.nextElementSibling;
+      if (!next || !next.dataset.spacer) {
+        const newSpacer = createSpacerCard();
+        grid.insertBefore(newSpacer, current.nextSibling);
+        current = newSpacer;
+      } else {
+        current = next;
+      }
+    }
+  }
+}
+
+function appendOrReplaceSpacer(grid, tile) {
+  const firstSpacer = grid.querySelector('.video-card.spacer-card');
+  if (firstSpacer) {
+    grid.replaceChild(tile, firstSpacer);
+  } else {
+    grid.appendChild(tile);
+  }
+}
+
+function cancelSwapMode() {
+  const grid = document.getElementById('video-grid');
+  if (grid) {
+    grid.classList.remove('swap-mode-active');
+    grid.querySelectorAll('.video-card').forEach(c => {
+      c.classList.remove('swap-source');
+      const badge = c.querySelector('.swap-target-badge');
+      if (badge) badge.remove();
+    });
+    grid.querySelectorAll('.empty-slot-target').forEach(e => e.remove());
+  }
+  activeSwapSourceCard = null;
+}
+
+function activateSwapMode(sourceCard) {
+  const grid = document.getElementById('video-grid');
+  if (!grid) return;
+
+  if (activeSwapSourceCard === sourceCard) {
+    cancelSwapMode();
+    return;
+  }
+
+  cancelSwapMode();
+  activeSwapSourceCard = sourceCard;
+  grid.classList.add('swap-mode-active');
+  sourceCard.classList.add('swap-source');
+
+  fillGridWithSpacers(grid);
+
+  grid.querySelectorAll('.video-card:not(.swap-source)').forEach(c => {
+    const badge = document.createElement('div');
+    badge.className = 'swap-target-badge';
+    badge.innerHTML = `
+      <span class="badge-icon">${icons.cursorClick}</span>
+      <span class="badge-text">${t('moveHere')}</span>
+    `;
+    c.appendChild(badge);
+  });
+}
+
+function animateGridMoveToEmpty(sourceCard, emptySlot) {
+  const grid = document.getElementById('video-grid');
+  if (!grid || !sourceCard || !emptySlot) return;
+
+  const allCards = Array.from(grid.querySelectorAll('.video-card:not(.empty-slot-target)'));
+
+  // 1. Measure FIRST positions
+  const firstPositions = new Map();
+  allCards.forEach(c => firstPositions.set(c, c.getBoundingClientRect()));
+
+  // 2. Insert sourceCard before emptySlot in DOM, then remove emptySlot
+  grid.insertBefore(sourceCard, emptySlot);
+  emptySlot.remove();
+
+  // 3. FLIP LERP Animation
+  allCards.forEach(c => {
+    const first = firstPositions.get(c);
+    const last = c.getBoundingClientRect();
+    if (!first || !last) return;
+
+    const dx = first.left - last.left;
+    const dy = first.top - last.top;
+
+    if (dx !== 0 || dy !== 0) {
+      c.style.transition = 'none';
+      c.style.transform = `translate(${dx}px, ${dy}px)`;
+
+      void c.offsetHeight; // Force reflow
+
+      c.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      c.style.transform = '';
+
+      setTimeout(() => {
+        c.style.transition = '';
+      }, 360);
+    }
+  });
+}
+
+function animateGridSwap(cardA, cardB) {
+  const grid = document.getElementById('video-grid');
+  if (!grid || !cardA || !cardB || cardA === cardB) return;
+
+  const allCards = Array.from(grid.querySelectorAll('.video-card'));
+
+  // 1. Measure FIRST positions
+  const firstPositions = new Map();
+  allCards.forEach(c => firstPositions.set(c, c.getBoundingClientRect()));
+
+  // 2. Perform DOM Swap
+  const nextA = cardA.nextSibling === cardB ? cardA : cardA.nextSibling;
+  grid.insertBefore(cardA, cardB);
+  grid.insertBefore(cardB, nextA);
+
+  // 3. FLIP LERP Animation
+  allCards.forEach(c => {
+    const first = firstPositions.get(c);
+    const last = c.getBoundingClientRect();
+    if (!first || !last) return;
+
+    const dx = first.left - last.left;
+    const dy = first.top - last.top;
+
+    if (dx !== 0 || dy !== 0) {
+      c.style.transition = 'none';
+      c.style.transform = `translate(${dx}px, ${dy}px)`;
+
+      void c.offsetHeight; // Force reflow
+
+      c.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      c.style.transform = '';
+
+      setTimeout(() => {
+        c.style.transition = '';
+      }, 360);
+    }
+  });
+}
+
+function moveCardToEmptyGridPosition(sourceCard, clientX, clientY) {
+  const grid = document.getElementById('video-grid');
+  if (!grid || !sourceCard) return;
+
+  const realCards = Array.from(grid.querySelectorAll('.video-card:not(.empty-slot-target)'));
+  if (!realCards.length) return;
+
+  // 1. Measure FIRST positions
+  const firstPositions = new Map();
+  realCards.forEach(c => firstPositions.set(c, c.getBoundingClientRect()));
+
+  // 2. Determine target position in grid based on clientX / clientY
+  let targetRefCard = null;
+  let insertBefore = false;
+
+  for (const card of realCards) {
+    if (card === sourceCard) continue;
+    const rect = card.getBoundingClientRect();
+
+    if (clientY < rect.bottom && clientX < rect.right) {
+      targetRefCard = card;
+      const isPastCenter = (clientX > rect.left + rect.width / 2) || (clientY > rect.top + rect.height / 2);
+      insertBefore = !isPastCenter;
+      break;
+    }
+  }
+
+  // 3. Move sourceCard in DOM
+  if (targetRefCard) {
+    if (insertBefore) {
+      grid.insertBefore(sourceCard, targetRefCard);
+    } else {
+      grid.insertBefore(sourceCard, targetRefCard.nextSibling);
+    }
+  } else {
+    // Append to end of grid
+    grid.appendChild(sourceCard);
+  }
+
+  // 4. Clean up any empty slot targets
+  grid.querySelectorAll('.empty-slot-target').forEach(e => e.remove());
+
+  // 5. FLIP LERP Animation
+  realCards.forEach(c => {
+    const first = firstPositions.get(c);
+    const last = c.getBoundingClientRect();
+    if (!first || !last) return;
+
+    const dx = first.left - last.left;
+    const dy = first.top - last.top;
+
+    if (dx !== 0 || dy !== 0) {
+      c.style.transition = 'none';
+      c.style.transform = `translate(${dx}px, ${dy}px)`;
+
+      void c.offsetHeight; // Force reflow
+
+      c.style.transition = 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      c.style.transform = '';
+
+      setTimeout(() => {
+        c.style.transition = '';
+      }, 360);
+    }
+  });
+}
+
+document.addEventListener('pointerdown', (e) => {
+  if (activeSwapSourceCard) {
+    const grid = document.getElementById('video-grid');
+    const isInsideGrid = grid && grid.contains(e.target);
+
+    if (isInsideGrid) {
+      const clickedCard = e.target.closest('.video-card');
+      const clickedEmptySlot = e.target.closest('.empty-slot-target');
+
+      if (!clickedCard || clickedEmptySlot) {
+        e.stopPropagation();
+        e.preventDefault();
+        const source = activeSwapSourceCard;
+        cancelSwapMode();
+        moveCardToEmptyGridPosition(source, e.clientX, e.clientY);
+      }
+    } else {
+      cancelSwapMode();
+    }
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && activeSwapSourceCard) {
+    cancelSwapMode();
+  }
+});
+
+function makeCardDraggable(card, header) {
+  let isPointerDown = false;
+  let isDragging = false;
+  let dragPlaceholder = null;
+  let offsetX = 0;
+  let offsetY = 0;
+  let savedWidth = '';
+  let savedHeight = '';
+  let startX = 0;
+  let startY = 0;
+  let hasMovedFar = false;
+
+  const dragHandle = header.querySelector('.drag-handle') || header;
+
+  // Intercept click on target card when in Swap Mode
+  card.addEventListener('pointerdown', (e) => {
+    if (activeSwapSourceCard && activeSwapSourceCard !== card) {
+      e.stopPropagation();
+      e.preventDefault();
+      const source = activeSwapSourceCard;
+      cancelSwapMode();
+      animateGridSwap(source, card);
+    }
+  }, true);
+
+  dragHandle.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button, select, input, .tile-settings-popover, .volume-popover')) {
       return;
     }
 
-    isDragging = true;
-    card.classList.add('dragging');
-    header.setPointerCapture(e.pointerId);
-  });
-
-  header.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
+    if (activeSwapSourceCard && activeSwapSourceCard !== card) {
+      return;
+    }
 
     const grid = document.getElementById('video-grid');
     if (!grid) return;
 
-    const cards = Array.from(grid.querySelectorAll('.video-card:not(.dragging)'));
-    const targetCard = cards.find(other => {
-      const rect = other.getBoundingClientRect();
-      return (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
-      );
-    });
+    isPointerDown = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    hasMovedFar = false;
 
-    if (targetCard) {
-      const rect = targetCard.getBoundingClientRect();
-      const nextSibling = (e.clientX > rect.left + rect.width / 2) ? targetCard.nextSibling : targetCard;
-      if (nextSibling !== card) {
-        grid.insertBefore(card, nextSibling);
+    const rect = card.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    savedWidth = card.style.width;
+    savedHeight = card.style.height;
+  });
+
+  dragHandle.addEventListener('pointermove', (e) => {
+    if (!isPointerDown) return;
+    if (activeSwapSourceCard && activeSwapSourceCard !== card) return;
+
+    if (!hasMovedFar && (Math.abs(e.clientX - startX) > 8 || Math.abs(e.clientY - startY) > 8)) {
+      hasMovedFar = true;
+      isDragging = true;
+      if (activeSwapSourceCard) cancelSwapMode();
+
+      const grid = document.getElementById('video-grid');
+      if (grid) {
+        const rect = card.getBoundingClientRect();
+        dragPlaceholder = document.createElement('div');
+        dragPlaceholder.className = `video-card drag-placeholder ${card.className}`;
+        dragPlaceholder.style.width = savedWidth || `${rect.width}px`;
+        dragPlaceholder.style.height = savedHeight || `${rect.height}px`;
+        grid.insertBefore(dragPlaceholder, card);
+
+        card.classList.add('dragging');
+        card.style.width = `${rect.width}px`;
+        card.style.height = `${rect.height}px`;
+
+        try {
+          dragHandle.setPointerCapture(e.pointerId);
+        } catch (err) {}
+      }
+    }
+
+    if (!isDragging || !dragPlaceholder) return;
+
+    const grid = document.getElementById('video-grid');
+    if (!grid) return;
+
+    card.style.left = `${e.clientX - offsetX}px`;
+    card.style.top = `${e.clientY - offsetY}px`;
+
+    const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+    if (!elemBelow) return;
+
+    const targetCard = elemBelow.closest('.video-card:not(.dragging):not(.drag-placeholder)');
+
+    if (targetCard && targetCard !== dragPlaceholder) {
+      const targetRect = targetCard.getBoundingClientRect();
+      const isAfter = (e.clientX > targetRect.left + targetRect.width / 2) || (e.clientY > targetRect.top + targetRect.height / 2);
+
+      if (isAfter) {
+        grid.insertBefore(dragPlaceholder, targetCard.nextSibling);
+      } else {
+        grid.insertBefore(dragPlaceholder, targetCard);
       }
     }
   });
 
   const stopDrag = (e) => {
+    if (!isPointerDown) return;
+    isPointerDown = false;
+
+    if (activeSwapSourceCard && activeSwapSourceCard !== card && !isDragging) {
+      return;
+    }
+
     if (isDragging) {
       isDragging = false;
+
       card.classList.remove('dragging');
+      card.style.position = '';
+      card.style.left = '';
+      card.style.top = '';
+      card.style.width = savedWidth;
+      card.style.height = savedHeight;
+      card.style.zIndex = '';
+      card.style.pointerEvents = '';
+
+      const grid = document.getElementById('video-grid');
+      if (grid && dragPlaceholder && dragPlaceholder.parentNode) {
+        grid.insertBefore(card, dragPlaceholder);
+        dragPlaceholder.remove();
+        dragPlaceholder = null;
+      }
+
       try {
-        header.releasePointerCapture(e.pointerId);
+        dragHandle.releasePointerCapture(e.pointerId);
       } catch (err) {}
+    } else if (!hasMovedFar) {
+      activateSwapMode(card);
     }
   };
 
-  header.addEventListener('pointerup', stopDrag);
-  header.addEventListener('pointercancel', stopDrag);
+  dragHandle.addEventListener('pointerup', stopDrag);
+  dragHandle.addEventListener('pointercancel', stopDrag);
 }
 
 function makeCardResizable(card) {
@@ -881,7 +1705,7 @@ function updateVideoGrid() {
     activeTileIds.add(id);
     if (!document.getElementById(id)) {
       const tile = createLocalVideoTile(id, t('yourScreen'), state.myScreenStream);
-      grid.appendChild(tile);
+      appendOrReplaceSpacer(grid, tile);
     }
   }
 
@@ -890,7 +1714,7 @@ function updateVideoGrid() {
     activeTileIds.add(id);
     if (!document.getElementById(id)) {
       const tile = createLocalVideoTile(id, t('yourCam'), state.myCameraStream);
-      grid.appendChild(tile);
+      appendOrReplaceSpacer(grid, tile);
     }
   }
 
@@ -905,11 +1729,11 @@ function updateVideoGrid() {
       const label = isCam ? t('camOf', { username: uname }) : t('screenOf', { username: uname });
 
       const tile = createRemoteVideoTile(id, label, data.stream, data.call, streamKey);
-      grid.appendChild(tile);
+      appendOrReplaceSpacer(grid, tile);
     }
   });
 
-  const existingTiles = Array.from(grid.querySelectorAll('.video-card'));
+  const existingTiles = Array.from(grid.querySelectorAll('.video-card:not(.spacer-card)'));
   existingTiles.forEach(tile => {
     if (!activeTileIds.has(tile.id)) {
       tile.remove();
@@ -921,6 +1745,13 @@ function updateVideoGrid() {
   }
 }
 
+function getVolIconSymbol(vol, muted) {
+  if (muted || vol === 0) return icons.volMute;
+  if (vol < 30) return icons.volLow;
+  if (vol < 70) return icons.volMed;
+  return icons.volHigh;
+}
+
 // Presenter/Host Local Tile - Controls Broadcast Quality sent to everyone
 function createLocalVideoTile(id, labelText, stream) {
   const card = document.createElement('div');
@@ -929,31 +1760,50 @@ function createLocalVideoTile(id, labelText, stream) {
 
   card.innerHTML = `
     <div class="video-header" id="header-${id}">
-      <span>${labelText}</span>
-      <div class="video-controls-inline">
-        <label style="font-size: 0.75rem;">${t('size')}</label>
-        <select id="size-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="size-small" selected>${t('small')}</option>
-          <option value="size-medium">${t('medium')}</option>
-          <option value="size-large">${t('large')}</option>
-        </select>
+      <div style="display: flex; align-items: center; gap: 0.35rem; overflow: hidden;">
+        <span class="drag-handle" title="Arrastar Card">${icons.grip}</span>
+        <span class="video-header-title">${labelText}</span>
+      </div>
+      <div class="video-header-actions">
+        <button class="icon-btn" id="btn-fullscreen-${id}" title="${t('fullscreen')}">${icons.maximize}</button>
+        <div class="settings-popover-container">
+          <button class="icon-btn gear-btn" id="btn-settings-${id}" title="${t('settings')}">${icons.settings}</button>
+          <div class="tile-settings-popover" id="popover-${id}">
+            <div class="popover-header">
+              <span>${t('settings')}</span>
+              <button class="icon-btn" id="popover-close-${id}" style="width:22px; height:22px; font-size:0.7rem;">${icons.close}</button>
+            </div>
+            
+            <div class="popover-section">
+              <label class="popover-label">${t('cardSizeLabel')}</label>
+              <div class="popover-pill-group">
+                <button class="popover-pill pill-size active" data-size="size-small">${t('small')}</button>
+                <button class="popover-pill pill-size" data-size="size-medium">${t('medium')}</button>
+                <button class="popover-pill pill-size" data-size="size-large">${t('large')}</button>
+              </div>
+            </div>
 
-        <label style="font-size: 0.75rem;">${t('broadcastRes')}</label>
-        <select id="res-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="480" ${state.screenSettings.resolution === '480' ? 'selected' : ''}>480p (SD)</option>
-          <option value="720" ${state.screenSettings.resolution === '720' ? 'selected' : ''}>720p (HD)</option>
-          <option value="1080" ${state.screenSettings.resolution === '1080' ? 'selected' : ''}>1080p (FHD)</option>
-          <option value="1440" ${state.screenSettings.resolution === '1440' ? 'selected' : ''}>1440p (2K)</option>
-          <option value="4k" ${state.screenSettings.resolution === '4k' ? 'selected' : ''}>4K (UHD)</option>
-        </select>
+            <div class="popover-section">
+              <label class="popover-label">${t('broadcastResLabel')}</label>
+              <select id="popover-broadcast-res-${id}" class="popover-select">
+                <option value="480" ${state.screenSettings.resolution === '480' ? 'selected' : ''}>480p (SD)</option>
+                <option value="720" ${state.screenSettings.resolution === '720' ? 'selected' : ''}>720p (HD)</option>
+                <option value="1080" ${state.screenSettings.resolution === '1080' ? 'selected' : ''}>1080p (FHD)</option>
+                <option value="1440" ${state.screenSettings.resolution === '1440' ? 'selected' : ''}>1440p (2K)</option>
+                <option value="4k" ${state.screenSettings.resolution === '4k' ? 'selected' : ''}>4K (UHD)</option>
+              </select>
+            </div>
 
-        <label style="font-size: 0.75rem;">${t('fps')}</label>
-        <select id="fps-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="30" ${state.screenSettings.fps === '30' ? 'selected' : ''}>30 FPS</option>
-          <option value="60" ${state.screenSettings.fps === '60' ? 'selected' : ''}>60 FPS</option>
-          <option value="15" ${state.screenSettings.fps === '15' ? 'selected' : ''}>15 FPS</option>
-        </select>
-        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-fullscreen-${id}">${t('fullscreen')}</button>
+            <div class="popover-section">
+              <label class="popover-label">${t('fpsLabel')}</label>
+              <select id="popover-fps-${id}" class="popover-select">
+                <option value="15" ${state.screenSettings.fps === '15' ? 'selected' : ''}>15 FPS</option>
+                <option value="30" ${state.screenSettings.fps === '30' ? 'selected' : ''}>30 FPS</option>
+                <option value="60" ${state.screenSettings.fps === '60' ? 'selected' : ''}>60 FPS</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="video-wrapper">
@@ -964,9 +1814,9 @@ function createLocalVideoTile(id, labelText, stream) {
   setTimeout(() => {
     const video = card.querySelector(`#video-el-${id}`);
     const fsBtn = card.querySelector(`#btn-fullscreen-${id}`);
-    const resSel = card.querySelector(`#res-sel-${id}`);
-    const fpsSel = card.querySelector(`#fps-sel-${id}`);
-    const sizeSel = card.querySelector(`#size-sel-${id}`);
+    const settingsBtn = card.querySelector(`#btn-settings-${id}`);
+    const popoverClose = card.querySelector(`#popover-close-${id}`);
+    const popover = card.querySelector(`#popover-${id}`);
     const header = card.querySelector(`#header-${id}`);
 
     if (video) {
@@ -977,27 +1827,7 @@ function createLocalVideoTile(id, labelText, stream) {
     if (header) {
       makeCardDraggable(card, header);
     }
-
     makeCardResizable(card);
-
-    if (sizeSel) {
-      sizeSel.addEventListener('change', (e) => {
-        card.style.width = '';
-        card.style.height = '';
-        card.classList.remove('size-small', 'size-medium', 'size-large');
-        card.classList.add(e.target.value);
-      });
-    }
-
-    if (resSel && fpsSel) {
-      const handleQualityChange = () => {
-        state.screenSettings.resolution = resSel.value;
-        state.screenSettings.fps = fpsSel.value;
-        applyRealtimeQuality(stream, resSel.value, fpsSel.value);
-      };
-      resSel.addEventListener('change', handleQualityChange);
-      fpsSel.addEventListener('change', handleQualityChange);
-    }
 
     if (fsBtn) {
       fsBtn.addEventListener('click', () => {
@@ -1008,12 +1838,57 @@ function createLocalVideoTile(id, labelText, stream) {
         }
       });
     }
+
+    // Toggle popover settings
+    if (settingsBtn && popover) {
+      settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popover.classList.toggle('active');
+      });
+    }
+
+    if (popoverClose && popover) {
+      popoverClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popover.classList.remove('active');
+      });
+    }
+
+    // Card size pills inside popover
+    if (popover) {
+      const sizePills = popover.querySelectorAll('.pill-size');
+      sizePills.forEach(pill => {
+        pill.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sizePills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          const sz = pill.getAttribute('data-size');
+          card.style.width = '';
+          card.style.height = '';
+          card.classList.remove('size-small', 'size-medium', 'size-large');
+          card.classList.add(sz);
+        });
+      });
+    }
+
+    // Broadcast Res & FPS changes
+    const bResSel = card.querySelector(`#popover-broadcast-res-${id}`);
+    const fpsSel = card.querySelector(`#popover-fps-${id}`);
+    if (bResSel || fpsSel) {
+      const handleBroadcastChange = () => {
+        if (bResSel) state.screenSettings.resolution = bResSel.value;
+        if (fpsSel) state.screenSettings.fps = fpsSel.value;
+        applyRealtimeQuality(stream, state.screenSettings.resolution, state.screenSettings.fps);
+      };
+      if (bResSel) bResSel.addEventListener('change', handleBroadcastChange);
+      if (fpsSel) fpsSel.addEventListener('change', handleBroadcastChange);
+    }
   }, 50);
 
   return card;
 }
 
-// Viewer Remote Tile - Controls Local Display Scale 100% Individually per viewer without touching host stream
+// Viewer Remote Tile - Controls Local Display Scale & Volume per viewer non-intrusively
 function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
   const card = document.createElement('div');
   card.className = 'video-card size-small';
@@ -1030,43 +1905,75 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
 
   card.innerHTML = `
     <div class="video-header" id="header-${id}">
-      <span>${labelText}</span>
-      <div class="video-controls-inline">
-        <label style="font-size: 0.75rem;">${t('size')}</label>
-        <select id="size-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="size-small" selected>${t('small')}</option>
-          <option value="size-medium">${t('medium')}</option>
-          <option value="size-large">${t('large')}</option>
-        </select>
-
-        <label style="font-size: 0.75rem;">${t('displayRes')}</label>
-        <select id="display-res-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="native" selected>${t('nativeRes')}</option>
-          <option value="1080">1080p</option>
-          <option value="720">720p</option>
-          <option value="480">480p</option>
-        </select>
-
-        <label style="font-size: 0.75rem;">${t('delay')}</label>
-        <select id="buf-sel-${id}" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">
-          <option value="5" selected>${t('delay5s')}</option>
-          <option value="3">${t('delay3s')}</option>
-          <option value="1">${t('delay1s')}</option>
-          <option value="0.25">${t('delay025s')}</option>
-        </select>
-
-        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-mute-${id}">
-          ${isMutedState || currentVolume === 0 ? t('unmute') : t('mute')}
-        </button>
-        
-        <div class="volume-container">
-          <label style="font-size: 0.75rem;">${t('vol')}</label>
-          <input type="range" id="vol-range-${id}" class="volume-slider" min="0" max="100" value="${currentVolume}">
-          <input type="number" id="vol-num-${id}" class="volume-number-input" min="0" max="100" value="${currentVolume}">%
+      <div style="display: flex; align-items: center; gap: 0.35rem; overflow: hidden;">
+        <span class="drag-handle" title="Arrastar Card">${icons.grip}</span>
+        <span class="video-header-title">${labelText}</span>
+      </div>
+      <div class="video-header-actions">
+        <!-- Modern Volume Widget -->
+        <div class="volume-widget-container" id="vol-container-${id}">
+          <button class="icon-btn" id="btn-vol-icon-${id}" title="${t('vol')}">
+            <span class="vol-icon-symbol" id="vol-symbol-${id}">${getVolIconSymbol(currentVolume, isMutedState)}</span>
+          </button>
+          <div class="volume-popover" id="vol-popover-${id}">
+            <input type="range" id="vol-range-${id}" class="volume-slider-custom" min="0" max="100" value="${currentVolume}">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.75rem; color: #a1a1aa;">Volume:</span>
+              <span class="volume-badge" id="vol-badge-${id}">${isMutedState ? 'MUTE' : currentVolume + '%'}</span>
+            </div>
+            <div class="volume-presets">
+              <button class="vol-preset-btn" data-vol="0">0%</button>
+              <button class="vol-preset-btn" data-vol="50">50%</button>
+              <button class="vol-preset-btn" data-vol="100">100%</button>
+            </div>
+          </div>
         </div>
 
-        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-fullscreen-${id}">${t('fullscreen')}</button>
-        <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" id="btn-close-${id}">${t('closeStream')}</button>
+        <!-- Fullscreen -->
+        <button class="icon-btn" id="btn-fullscreen-${id}" title="${t('fullscreen')}">${icons.maximize}</button>
+        
+        <!-- Tile Popover Settings -->
+        <div class="settings-popover-container">
+          <button class="icon-btn gear-btn" id="btn-settings-${id}" title="${t('settings')}">${icons.settings}</button>
+          <div class="tile-settings-popover" id="popover-${id}">
+            <div class="popover-header">
+              <span>${t('settings')}</span>
+              <button class="icon-btn" id="popover-close-${id}" style="width:22px; height:22px; font-size:0.7rem;">${icons.close}</button>
+            </div>
+
+            <div class="popover-section">
+              <label class="popover-label">${t('cardSizeLabel')}</label>
+              <div class="popover-pill-group">
+                <button class="popover-pill pill-size active" data-size="size-small">${t('small')}</button>
+                <button class="popover-pill pill-size" data-size="size-medium">${t('medium')}</button>
+                <button class="popover-pill pill-size" data-size="size-large">${t('large')}</button>
+              </div>
+            </div>
+
+            <div class="popover-section">
+              <label class="popover-label">${t('displayResLabel')}</label>
+              <select id="popover-display-res-${id}" class="popover-select">
+                <option value="native" selected>${t('nativeRes')}</option>
+                <option value="1080">1080p (FHD)</option>
+                <option value="720">720p (HD)</option>
+                <option value="480">480p (SD)</option>
+              </select>
+            </div>
+
+            <div class="popover-section">
+              <label class="popover-label">${t('delayLabel')}</label>
+              <select id="popover-delay-${id}" class="popover-select">
+                <option value="0.25">${t('delay025s')}</option>
+                <option value="1">${t('delay1s')}</option>
+                <option value="3">${t('delay3s')}</option>
+                <option value="5" selected>${t('delay5s')}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Close Stream -->
+        <button class="icon-btn btn-close-card" id="btn-close-${id}" title="${t('closeStream')}">${icons.close}</button>
       </div>
     </div>
     <div class="video-wrapper">
@@ -1083,12 +1990,14 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
     const watchBtn = card.querySelector(`#btn-watch-${id}`);
     const fsBtn = card.querySelector(`#btn-fullscreen-${id}`);
     const closeBtn = card.querySelector(`#btn-close-${id}`);
-    const volNum = card.querySelector(`#vol-num-${id}`);
+    const settingsBtn = card.querySelector(`#btn-settings-${id}`);
+    const popoverClose = card.querySelector(`#popover-close-${id}`);
+    const popover = card.querySelector(`#popover-${id}`);
+    const volIconBtn = card.querySelector(`#btn-vol-icon-${id}`);
+    const volSymbol = card.querySelector(`#vol-symbol-${id}`);
+    const volBadge = card.querySelector(`#vol-badge-${id}`);
     const volRange = card.querySelector(`#vol-range-${id}`);
-    const muteBtn = card.querySelector(`#btn-mute-${id}`);
-    const sizeSel = card.querySelector(`#size-sel-${id}`);
-    const bufSel = card.querySelector(`#buf-sel-${id}`);
-    const displayResSel = card.querySelector(`#display-res-sel-${id}`);
+    const volContainer = card.querySelector(`#vol-container-${id}`);
     const header = card.querySelector(`#header-${id}`);
 
     cleanupRemoteAudioNodes(streamKey);
@@ -1153,12 +2062,9 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
         lastNonZeroVolume = clamped;
       }
 
-      if (volNum) volNum.value = clamped;
       if (volRange) volRange.value = clamped;
-
-      if (muteBtn) {
-        muteBtn.innerText = isMutedState ? t('unmute') : t('mute');
-      }
+      if (volBadge) volBadge.innerText = isMutedState ? 'MUTE' : `${clamped}%`;
+      if (volSymbol) volSymbol.innerHTML = getVolIconSymbol(clamped, isMutedState);
 
       if (gainNode) {
         const ctx = getAudioContext();
@@ -1181,24 +2087,33 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
 
     applyVolume(currentVolume, isMutedState);
 
-    if (volNum) {
-      volNum.addEventListener('input', (e) => applyVolume(e.target.value, false));
-      volNum.addEventListener('change', (e) => applyVolume(e.target.value, false));
-    }
-
-    if (volRange) {
-      volRange.addEventListener('input', (e) => applyVolume(e.target.value, false));
-      volRange.addEventListener('change', (e) => applyVolume(e.target.value, false));
-    }
-
-    if (muteBtn) {
-      muteBtn.addEventListener('click', () => {
+    // Mute icon click toggle
+    if (volIconBtn) {
+      volIconBtn.addEventListener('click', (e) => {
+        if (e.target.closest('.volume-popover')) return;
         getAudioContext();
         if (isMutedState) {
           applyVolume(lastNonZeroVolume > 0 ? lastNonZeroVolume : 100, false);
         } else {
           applyVolume(currentVolume, true);
         }
+      });
+    }
+
+    // Volume Slider
+    if (volRange) {
+      volRange.addEventListener('input', (e) => applyVolume(e.target.value, false));
+      volRange.addEventListener('change', (e) => applyVolume(e.target.value, false));
+    }
+
+    // Volume Presets
+    if (volContainer) {
+      volContainer.querySelectorAll('.vol-preset-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetVol = parseInt(btn.getAttribute('data-vol'), 10);
+          applyVolume(targetVol, targetVol === 0);
+        });
       });
     }
 
@@ -1217,32 +2132,44 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
       });
     }
 
-    if (header) {
-      makeCardDraggable(card, header);
-    }
-
-    makeCardResizable(card);
-
-    if (sizeSel) {
-      sizeSel.addEventListener('change', (e) => {
-        card.style.width = '';
-        card.style.height = '';
-        card.classList.remove('size-small', 'size-medium', 'size-large');
-        card.classList.add(e.target.value);
+    // Toggle popover settings
+    if (settingsBtn && popover) {
+      settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popover.classList.toggle('active');
       });
     }
 
-    if (bufSel && video) {
-      bufSel.addEventListener('change', (e) => {
-        const seconds = parseFloat(e.target.value) || 5.0;
-        applyStreamPlayoutBuffer(video, peerCall, seconds);
+    if (popoverClose && popover) {
+      popoverClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popover.classList.remove('active');
       });
     }
 
-    // Individual Local Display Resolution Scaling (does NOT alter host stream for other viewers!)
-    if (displayResSel && video) {
-      displayResSel.addEventListener('change', (e) => {
+    // Card size pills inside popover
+    if (popover) {
+      const sizePills = popover.querySelectorAll('.pill-size');
+      sizePills.forEach(pill => {
+        pill.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sizePills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          const sz = pill.getAttribute('data-size');
+          card.style.width = '';
+          card.style.height = '';
+          card.classList.remove('size-small', 'size-medium', 'size-large');
+          card.classList.add(sz);
+        });
+      });
+    }
+
+    // Display Scale
+    const dispSel = card.querySelector(`#popover-display-res-${id}`);
+    if (dispSel && video) {
+      dispSel.addEventListener('change', (e) => {
         const val = e.target.value;
+        card.dataset.displayRes = val;
         if (val === '480') {
           video.style.maxWidth = '854px';
           video.style.maxHeight = '480px';
@@ -1258,6 +2185,22 @@ function createRemoteVideoTile(id, labelText, stream, peerCall, streamKey) {
         }
       });
     }
+
+    // Delay Buffer
+    const delaySel = card.querySelector(`#popover-delay-${id}`);
+    if (delaySel && video) {
+      delaySel.addEventListener('change', (e) => {
+        const sec = parseFloat(e.target.value) || 5.0;
+        card.dataset.delay = e.target.value;
+        applyStreamPlayoutBuffer(video, peerCall, sec);
+      });
+    }
+
+    if (header) {
+      makeCardDraggable(card, header);
+    }
+
+    makeCardResizable(card);
 
     if (fsBtn) {
       fsBtn.addEventListener('click', () => {
@@ -1558,13 +2501,49 @@ function broadcastMemberList() {
   });
 }
 
+function renderUsersList() {
+  const ul = document.getElementById('users-list-ul');
+  if (!ul) return;
+
+  ul.innerHTML = '';
+  if (state.roomMembers.size === 0 && state.myUsername) {
+    state.roomMembers.set(state.myPeerId || 'local', state.myUsername);
+  }
+
+  state.roomMembers.forEach((uname, peerId) => {
+    const isMe = peerId === state.myPeerId || uname === state.myUsername;
+    const li = document.createElement('li');
+    li.className = 'user-list-item';
+
+    const hasScreen = isMe ? !!state.myScreenStream : Array.from(state.activeRemoteStreams.values()).some(s => s.peerId === peerId && !s.streamKey?.includes('-cam'));
+    const hasCam = isMe ? !!state.myCameraStream : Array.from(state.activeRemoteStreams.values()).some(s => s.peerId === peerId && s.streamKey?.includes('-cam'));
+
+    li.innerHTML = `
+      <div class="user-info">
+        <span class="user-icon">${icons.user}</span>
+        <span class="user-name">${uname} ${isMe ? `<span class="you-tag">${t('youTag')}</span>` : ''}</span>
+      </div>
+      <div class="user-status-badges">
+        ${hasScreen ? `<span class="stream-badge screen-badge" title="${t('shareScreen')}">${icons.share}</span>` : ''}
+        ${hasCam ? `<span class="stream-badge cam-badge" title="${t('turnOnCam')}">${icons.camera}</span>` : ''}
+      </div>
+    `;
+    ul.appendChild(li);
+  });
+}
+
 function updateMemberCountLabel() {
+  const count = state.roomMembers.size;
+  const label = count === 1 ? t('person') : t('people');
   const lbl = document.getElementById('member-count-label');
   if (lbl) {
-    const count = state.roomMembers.size;
-    const label = count === 1 ? t('person') : t('people');
     lbl.innerText = t('peopleInRoom', { count, label });
   }
+  const popoverCount = document.getElementById('popover-member-count');
+  if (popoverCount) {
+    popoverCount.innerText = count;
+  }
+  renderUsersList();
 }
 
 function getQualityVideoConstraints() {
@@ -1597,6 +2576,21 @@ function getQualityVideoConstraints() {
   return videoConstraints;
 }
 
+function hideRoomCodeAutomatically() {
+  if (!state.isRoomCodeHidden) {
+    state.isRoomCodeHidden = true;
+    const textEl = document.getElementById('room-code-text');
+    if (textEl) {
+      textEl.innerText = '••••••••';
+    }
+    const toggleVisibilityBtn = document.getElementById('btn-toggle-room-code');
+    if (toggleVisibilityBtn) {
+      toggleVisibilityBtn.innerHTML = icons.eyeOff;
+      toggleVisibilityBtn.title = t('showRoomCode');
+    }
+  }
+}
+
 async function startMyScreenShare() {
   try {
     const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -1607,6 +2601,7 @@ async function startMyScreenShare() {
     });
 
     state.myScreenStream = stream;
+    hideRoomCodeAutomatically();
 
     state.dataConnections.forEach((conn, peerId) => {
       const call = state.peer.call(peerId, stream, { metadata: { type: 'screen', username: state.myUsername } });
@@ -1619,8 +2614,8 @@ async function startMyScreenShare() {
 
     const btn = document.getElementById('btn-toggle-share');
     if (btn) {
-      btn.innerText = t('stopShareScreen');
-      btn.className = 'btn btn-danger';
+      btn.innerHTML = `${icons.share} <span>${t('stopShareScreen')}</span>`;
+      btn.className = 'btn btn-danger dock-btn';
     }
 
     updateVideoGrid();
@@ -1642,8 +2637,8 @@ function stopMyScreenShare() {
 
   const btn = document.getElementById('btn-toggle-share');
   if (btn) {
-    btn.innerText = t('shareScreen');
-    btn.className = 'btn';
+    btn.innerHTML = `${icons.share} <span>${t('shareScreen')}</span>`;
+    btn.className = 'btn btn-primary dock-btn';
   }
 
   const tile = document.getElementById('tile-my-local-screen');
@@ -1664,6 +2659,7 @@ async function startMyWebcam() {
     });
 
     state.myCameraStream = stream;
+    hideRoomCodeAutomatically();
 
     state.dataConnections.forEach((conn, peerId) => {
       const call = state.peer.call(peerId, stream, { metadata: { type: 'camera', username: state.myUsername } });
@@ -1676,8 +2672,8 @@ async function startMyWebcam() {
 
     const btn = document.getElementById('btn-toggle-cam');
     if (btn) {
-      btn.innerText = t('turnOffCam');
-      btn.className = 'btn btn-danger';
+      btn.innerHTML = `${icons.camera} <span>${t('turnOffCam')}</span>`;
+      btn.className = 'btn btn-danger dock-btn';
     }
 
     updateVideoGrid();
@@ -1699,8 +2695,8 @@ function stopMyWebcam() {
 
   const btn = document.getElementById('btn-toggle-cam');
   if (btn) {
-    btn.innerText = t('turnOnCam');
-    btn.className = 'btn btn-secondary';
+    btn.innerHTML = `${icons.camera} <span>${t('turnOnCam')}</span>`;
+    btn.className = 'btn btn-secondary dock-btn';
   }
 
   const tile = document.getElementById('tile-my-local-cam');
